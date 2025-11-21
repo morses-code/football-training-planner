@@ -46,7 +46,13 @@
 <div class="border-t border-slate-700 p-4">
 	{#if $user}
 		<!-- Logged in state -->
-		<a href="/profile" class="flex items-center gap-4 hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors">
+		<a
+			href="/profile"
+			class="flex items-center hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors relative group"
+			class:justify-start={isExpanded}
+			class:justify-center={!isExpanded}
+			class:gap-4={isExpanded}
+		>
 			<div class="h-8 w-8 flex-shrink-0 text-slate-300">
 				<NavIcon path={avatarPaths[$user.avatar] || avatarPaths['user-circle']} class="h-8 w-8" />
 			</div>
@@ -60,6 +66,15 @@
 				<p class="text-sm font-medium whitespace-nowrap">{$user.name}</p>
 				<p class="text-xs text-slate-400 whitespace-nowrap">{$user.email}</p>
 			</div>
+			
+			<!-- Tooltip for collapsed state -->
+			{#if !isExpanded}
+				<div
+					class="absolute left-full ml-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-r-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
+				>
+					Profile
+				</div>
+			{/if}
 		</a>
 		
 		{#if isExpanded}
@@ -74,7 +89,10 @@
 		<!-- Logged out state -->
 		<a
 			href="/login"
-			class="flex items-center gap-4 hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors"
+			class="flex items-center hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors relative group"
+			class:justify-start={isExpanded}
+			class:justify-center={!isExpanded}
+			class:gap-4={isExpanded}
 		>
 			<NavIcon
 				path="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
@@ -89,6 +107,15 @@
 			>
 				Sign in
 			</span>
+			
+			<!-- Tooltip for collapsed state -->
+			{#if !isExpanded}
+				<div
+					class="absolute left-full ml-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-r-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
+				>
+					Sign in
+				</div>
+			{/if}
 		</a>
 	{/if}
 </div>

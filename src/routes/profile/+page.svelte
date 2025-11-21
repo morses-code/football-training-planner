@@ -1,6 +1,7 @@
 <script lang="ts">
 	import NavIcon from '$lib/components/NavIcon.svelte';
 	import type { PageData } from './$types';
+	import { invalidateAll, goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
@@ -22,6 +23,7 @@
 	});
 	let showBanner = $state(false);
 	let isSubmitting = $state(false);
+	let isLoggingOut = $state(false);
 
 	function startEditing() {
 		editData = {
@@ -35,33 +37,45 @@
 		isEditing = false;
 	}
 
-	function saveChanges() {
+	async function saveChanges() {
 		isSubmitting = true;
 
-		fetch('/api/profile', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(editData)
-		})
-			.then((res) => res.json())
-			.then((responseData) => {
-				if (responseData.success) {
-					// Update local data
-					if (data.user) {
-						data.user.name = editData.name;
-						data.user.avatar = editData.avatar;
-					}
-					isEditing = false;
-					showBanner = true;
-					setTimeout(() => {
-						showBanner = false;
-					}, 3000);
-				}
-				isSubmitting = false;
-			})
-			.catch(() => {
-				isSubmitting = false;
+		try {
+			const res = await fetch('/api/profile', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(editData)
 			});
+			
+			const responseData = await res.json();
+			
+			if (responseData.success) {
+				// Refresh all server data to update user store and navigation
+				await invalidateAll();
+				
+				isEditing = false;
+				showBanner = true;
+				setTimeout(() => {
+					showBanner = false;
+				}, 3000);
+			}
+		} catch (error) {
+			console.error('Failed to update profile:', error);
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	async function handleLogout() {
+		isLoggingOut = true;
+		try {
+			await fetch('/api/logout', { method: 'POST' });
+			await invalidateAll();
+			goto('/');
+		} catch (error) {
+			console.error('Logout failed:', error);
+			isLoggingOut = false;
+		}
 	}
 </script>
 
@@ -171,6 +185,14 @@
 							</span>
 						</div>
 					</div>
+					
+					<button
+						onclick={handleLogout}
+						disabled={isLoggingOut}
+						class="w-full mt-6 bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50"
+					>
+						{isLoggingOut ? 'Signing out...' : 'Sign Out'}
+					</button>
 				</div>
 			</div>
 		</div>
