@@ -1,3 +1,42 @@
+<!--
+	@component
+	Vertical navigation sidebar with expand/collapse functionality.
+	
+	## Features
+	- Animated expand/collapse (64px collapsed, 256px expanded)
+	- Glass gleam effect on nav item clicks
+	- Click-outside-to-collapse behavior
+	- Auto-collapse after navigation when expanded
+	
+	## Usage
+	```svelte
+	<script>
+		import VerticalNav from '$lib/components/VerticalNav.svelte';
+	</script>
+	
+	<VerticalNav />
+	```
+	
+	## Customization
+	To customize nav items, edit the `navItems` array:
+	```typescript
+	const navItems: NavItem[] = [
+		{
+			label: 'Dashboard',
+			href: '/dashboard',
+			icon: 'M3 12l2-2m0 0l7-7...' // Heroicons SVG path
+		}
+	];
+	```
+	
+	## Dependencies
+	- NavItem: Individual navigation link with gleam effect
+	- NavIcon: SVG icon wrapper for Heroicons paths
+	- NavProfile: User profile footer section
+	
+	@example
+	<VerticalNav />
+-->
 <script lang="ts">
 	import NavIcon from './NavIcon.svelte';
 	import NavItem from './NavItem.svelte';
@@ -9,7 +48,7 @@
 		icon: string;
 	};
 
-	let isExpanded = $state(true);
+	let isExpanded = $state(false);
 	let gleamingItem = $state<number | null>(null);
 	let navElement: HTMLElement | undefined = $state();
 
@@ -85,6 +124,11 @@
 					{isExpanded}
 					isGleaming={gleamingItem === index}
 					onGleam={() => triggerGleam(index)}
+					onNavigate={() => {
+						if (isExpanded) {
+							isExpanded = false;
+						}
+					}}
 				/>
 			{/each}
 		</ul>

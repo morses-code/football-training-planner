@@ -1,3 +1,21 @@
+<!--
+	@component
+	User profile section for navigation footer.
+	
+	## Props
+	- `isExpanded`: Whether parent nav is expanded (controls visibility)
+	- `name`: User's display name (default: 'User Profile')
+	- `email`: User's email address (default: 'user@example.com')
+	
+	@example
+	```svelte
+	<NavProfile 
+		isExpanded={true} 
+		name="John Doe" 
+		email="john@example.com" 
+	/>
+	```
+-->
 <script lang="ts">
 	let { isExpanded, name = 'User Profile', email = 'user@example.com' } = $props<{
 		isExpanded: boolean;

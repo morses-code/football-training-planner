@@ -1,3 +1,29 @@
+<!--
+	@component
+	Individual navigation link with glass gleam animation effect.
+	
+	## Props
+	- `href`: Navigation destination URL
+	- `label`: Display text for the nav item
+	- `icon`: Heroicons SVG path string
+	- `isExpanded`: Whether parent nav is expanded
+	- `isGleaming`: Whether gleam animation is active
+	- `onGleam`: Callback to trigger gleam effect
+	- `onNavigate`: Optional callback fired on click (e.g., to collapse nav)
+	
+	@example
+	```svelte
+	<NavItem
+		href="/home"
+		label="Home"
+		icon="M3 12l2-2m0 0l7-7..."
+		isExpanded={true}
+		isGleaming={false}
+		onGleam={() => console.log('gleam')}
+		onNavigate={() => console.log('navigating')}
+	/>
+	```
+-->
 <script lang="ts">
 	import NavIcon from './NavIcon.svelte';
 
@@ -7,7 +33,8 @@
 		icon,
 		isExpanded,
 		isGleaming,
-		onGleam
+		onGleam,
+		onNavigate
 	} = $props<{
 		href: string;
 		label: string;
@@ -15,13 +42,19 @@
 		isExpanded: boolean;
 		isGleaming: boolean;
 		onGleam: () => void;
+		onNavigate?: () => void;
 	}>();
+
+	function handleClick() {
+		onGleam();
+		onNavigate?.();
+	}
 </script>
 
-<li class="relative">
+<li class="relative group">
 	<a
 		{href}
-		onclick={onGleam}
+		onclick={handleClick}
 		class="flex items-center gap-4 rounded-lg px-4 py-3 transition-all duration-200 hover:bg-slate-700 relative overflow-hidden"
 	>
 		<NavIcon path={icon} class="h-6 w-6 flex-shrink-0 relative z-10" />
@@ -40,6 +73,15 @@
 			<div class="gleam"></div>
 		{/if}
 	</a>
+	
+	<!-- Tooltip (only visible when collapsed) -->
+	{#if !isExpanded}
+		<div
+			class="absolute left-full top-1/2 -translate-y-1/2 bg-slate-800 text-white text-sm font-medium px-3 py-2 rounded-r-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 pointer-events-none"
+		>
+			{label}
+		</div>
+	{/if}
 </li>
 
 <style>
