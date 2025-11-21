@@ -1,5 +1,13 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
+</script>
+
 <div class="max-w-4xl">
-	<h1 class="text-4xl font-bold text-slate-900 mb-4">Welcome to SvelteKit</h1>
+	<h1 class="text-4xl font-bold text-slate-900 mb-4">
+		Welcome to SvelteKit{#if data.user}, {data.user.name}{/if}
+	</h1>
 	<p class="text-lg text-slate-600 mb-6">
 		Visit <a href="https://svelte.dev/docs/kit" class="text-blue-600 hover:underline"
 			>svelte.dev/docs/kit</a

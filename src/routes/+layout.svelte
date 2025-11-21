@@ -2,8 +2,15 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import VerticalNav from '$lib/components/VerticalNav.svelte';
+	import { user } from '$lib/stores/user';
+	import type { LayoutData } from './$types';
 
-	let { children } = $props();
+	let { children, data }: { children: any; data: LayoutData } = $props();
+
+	// Initialize user from server data
+	$effect(() => {
+		user.set(data.user);
+	});
 </script>
 
 <svelte:head>
