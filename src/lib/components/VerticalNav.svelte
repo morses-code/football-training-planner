@@ -4,9 +4,12 @@
 	
 	## Features
 	- Animated expand/collapse (64px collapsed, 256px expanded)
+	- Defaults to collapsed state on initial load
 	- Glass gleam effect on nav item clicks
 	- Click-outside-to-collapse behavior
 	- Auto-collapse after navigation when expanded
+	- Profile section at bottom showing login/logout state
+	- Protected routes (e.g., Profile) only visible when authenticated
 	
 	## Usage
 	```svelte
@@ -28,6 +31,10 @@
 		}
 	];
 	```
+	
+	## Authentication
+	Uses `$user` store to conditionally show protected routes.
+	Profile section automatically syncs with authentication state.
 	
 	## Dependencies
 	- NavItem: Individual navigation link with gleam effect

@@ -1,6 +1,6 @@
 <!--
 	@component
-	Individual navigation link with glass gleam animation effect.
+	Individual navigation link with glass gleam animation effect and tooltips.
 	
 	## Props
 	- `href`: Navigation destination URL
@@ -10,6 +10,12 @@
 	- `isGleaming`: Whether gleam animation is active
 	- `onGleam`: Callback to trigger gleam effect
 	- `onNavigate`: Optional callback fired on click (e.g., to collapse nav)
+	
+	## Features
+	- Icons center when collapsed, left-align when expanded
+	- Hover tooltips appear when navigation is collapsed
+	- Glass gleam animation on click
+	- Smooth transitions between states
 	
 	@example
 	```svelte

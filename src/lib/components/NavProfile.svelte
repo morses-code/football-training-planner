@@ -1,15 +1,23 @@
 <!--
 	@component
-	User profile section for navigation footer with login/logout functionality.
+	User profile section for navigation footer with authentication state display.
 	
 	## Props
-	- `isExpanded`: Whether parent nav is expanded (controls visibility)
+	- `isExpanded`: Whether parent nav is expanded (controls layout)
 	
 	## Features
-	- Shows login button when not authenticated
-	- Displays user profile with avatar when authenticated
-	- Logout functionality
+	- Shows "Sign in" link when not authenticated
+	- Displays user avatar, name, and email when authenticated
 	- Links to profile page when logged in
+	- Sign out button appears when nav is expanded
+	- Hover tooltips when navigation is collapsed
+	- Icons center when collapsed, left-align when expanded
+	- Server-side authentication via `$user` store
+	
+	## Authentication
+	- Reads from `$user` store (synced with server via layout)
+	- Logout calls `/api/logout`, invalidates data, redirects to home
+	- Automatically updates when user logs in/out or changes profile
 	
 	@example
 	```svelte

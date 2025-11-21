@@ -1,0 +1,14 @@
+{
+	"entryPoints": ["src/lib"],
+	"entryPointStrategy": "expand",
+	"out": "docs",
+	"exclude": [
+		"**/*.spec.ts",
+		"**/*.test.ts",
+		"**/node_modules/**",
+		"**/.svelte-kit/**"
+	],
+	"excludePrivate": true,
+	"excludeProtected": true,
+	"readme": "none"
+}
