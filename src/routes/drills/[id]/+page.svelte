@@ -107,20 +107,19 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
-	<div class="max-w-4xl mx-auto px-4 py-4">
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg print:hidden z-40">
+	<div class="px-4 py-4 flex items-center justify-between">
+		<a
+			href="/drills"
+			onclick={(e) => { triggerGleam('back'); }}
+			class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+		>
+			{#if gleamingItem === 'back'}
+				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+			{/if}
+			← Back
+		</a>
 		<div class="flex items-center gap-2">
-			<a
-				href="/drills"
-				onclick={(e) => { triggerGleam('back'); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
-			>
-				{#if gleamingItem === 'back'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
-				{/if}
-				← Back
-			</a>
-			<div class="flex-1"></div>
 			<button
 				onclick={(e) => { triggerGleam('print'); print(); }}
 				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"

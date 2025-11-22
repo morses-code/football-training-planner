@@ -155,7 +155,7 @@
 
 <!-- Sticky Action Bar -->
 {#if data.user}
-	<div class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
+	<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
 		<div class="max-w-6xl mx-auto px-4 py-4">
 			<div class="flex items-center justify-end">
 				<a

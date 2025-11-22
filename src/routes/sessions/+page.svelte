@@ -112,11 +112,7 @@
 				<div class="bg-white rounded-lg shadow lg:sticky lg:top-6">
 					<div class="p-4 md:p-6">
 						<CalendarView 
-							sessions={data.sessions} 
-							onDayClick={(date) => {
-								// Future: could filter list or navigate to date
-								console.log('Selected date:', date);
-							}} 
+							sessions={data.sessions}
 						/>
 					</div>
 				</div>
@@ -126,8 +122,8 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
-	<div class="max-w-6xl mx-auto px-4 py-3 md:py-4">
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
+	<div class="max-w-6xl mx-auto px-4 py-4">
 		<div class="flex items-center justify-end">
 			<a
 				href="/sessions/new"
@@ -147,4 +143,4 @@
 </div>
 
 <!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-16 md:h-20 print:hidden"></div>
+<div class="h-20 print:hidden"></div>

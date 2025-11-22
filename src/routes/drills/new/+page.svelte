@@ -15,6 +15,14 @@
 
 	let isSubmitting = $state(false);
 	let error = $state<string | null>(null);
+	let gleamingItem = $state<string | null>(null);
+
+	function triggerGleam(item: string) {
+		gleamingItem = item;
+		setTimeout(() => {
+			gleamingItem = null;
+		}, 600);
+	}
 
 	const categories = [
 		{ value: 'warmup', label: 'Warm-up' },
@@ -67,7 +75,7 @@
 		</div>
 	{/if}
 
-	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+	<form id="drill-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Basic Information -->
 		<div class="bg-white rounded-lg shadow p-6 mb-6">
 			<h2 class="text-xl font-semibold text-slate-800 mb-4">Basic Information</h2>
@@ -209,22 +217,41 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Actions -->
-		<div class="flex gap-3">
-			<button
-				type="submit"
-				disabled={isSubmitting}
-				class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
-			>
-				{isSubmitting ? 'Creating...' : 'Create Drill'}
-			</button>
-			<a
-				href="/drills"
-				class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-			>
-				Cancel
-			</a>
-		</div>
 	</form>
 </div>
+
+<!-- Bottom Action Bar -->
+<div class="h-20 print:hidden"></div>
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
+	<div class="px-4 py-4">
+		<div class="flex items-center gap-2">
+			<a
+				href="/drills"
+				onclick={(e) => { triggerGleam('cancel'); }}
+				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+			>
+				{#if gleamingItem === 'cancel'}
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+				{/if}
+				← Cancel
+			</a>
+			<div class="flex-1"></div>
+			<button
+				type="submit"
+				form="drill-form"
+				disabled={isSubmitting}
+				onclick={(e) => { if (!isSubmitting) triggerGleam('create'); }}
+				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 relative overflow-hidden"
+			>
+				{#if gleamingItem === 'create'}
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+				{/if}
+				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				<span class="relative z-10">{isSubmitting ? 'Creating...' : 'Create Drill'}</span>
+			</button>
+		</div>
+	</div>
+</div>
+

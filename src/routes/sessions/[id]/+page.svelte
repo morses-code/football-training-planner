@@ -79,9 +79,9 @@
 
 <div class="max-w-4xl">
 	<!-- Header -->
-	<div class="mb-6">
-		<h1 class="text-4xl font-bold text-slate-900 mb-2">Training Session</h1>
-		<div class="flex items-center gap-4 text-lg text-slate-600">
+	<div class="mb-4 md:mb-6">
+		<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-2">Training Session</h1>
+		<div class="flex flex-wrap items-center gap-2 md:gap-4 text-sm md:text-lg text-slate-600">
 			<span>{formattedDate}</span>
 			<span>•</span>
 			<span>{data.session.start_time}</span>
@@ -91,17 +91,17 @@
 	</div>
 
 	{#if data.session.notes}
-		<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-			<h3 class="font-semibold text-blue-900 mb-1">Session Notes</h3>
-			<p class="text-blue-800">{data.session.notes}</p>
+		<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mb-4 md:mb-6">
+			<h3 class="font-semibold text-blue-900 mb-1 text-sm md:text-base">Session Notes</h3>
+			<p class="text-sm md:text-base text-blue-800">{data.session.notes}</p>
 		</div>
 	{/if}
 
 	<!-- Session Timeline -->
-	<div class="bg-white rounded-lg shadow p-6 mb-6">
-		<h2 class="text-xl font-semibold text-slate-800 mb-4">Session Plan</h2>
+	<div class="bg-white rounded-lg shadow p-4 md:p-6 mb-4 md:mb-6">
+		<h2 class="text-lg md:text-xl font-semibold text-slate-800 mb-4">Session Plan</h2>
 
-		<div class="space-y-6">
+		<div class="space-y-4 md:space-y-6">
 			{#each data.slots as slot, index}
 				{@const slotBadge = getSlotTypeBadge(slot.slot_type)}
 				{@const coaches = data.slotCoaches[slot.id] || []}
@@ -109,38 +109,38 @@
 				<div class="relative">
 					<!-- Timeline connector -->
 					{#if index < data.slots.length - 1}
-						<div class="absolute left-6 top-12 bottom-0 w-0.5 bg-slate-200 -mb-6"></div>
+						<div class="absolute left-5 md:left-6 top-10 md:top-12 bottom-0 w-0.5 bg-slate-200 -mb-4 md:-mb-6"></div>
 					{/if}
 
-					<div class="flex gap-4">
+					<div class="flex gap-3 md:gap-4">
 						<!-- Timeline dot -->
-						<div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg relative z-10">
+						<div class="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg relative z-10 text-sm md:text-base">
 							{index + 1}
 						</div>
 
 						<!-- Content -->
-						<div class="flex-1 bg-slate-50 rounded-lg p-4">
-							<div class="flex items-start justify-between mb-3">
-								<div>
-									<div class="flex items-center gap-3 mb-2">
-										<h3 class="text-lg font-semibold text-slate-900">
+						<div class="flex-1 bg-slate-50 rounded-lg p-3 md:p-4">
+							<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 md:mb-3 gap-2">
+								<div class="flex-1 min-w-0">
+									<div class="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+										<h3 class="text-base md:text-lg font-semibold text-slate-900">
 											{slot.drill_name || `Slot ${index + 1}`}
 										</h3>
-										<span class="px-2 py-1 text-xs font-medium rounded {slotBadge.color}">
+										<span class="px-2 py-1 text-xs font-medium rounded {slotBadge.color} whitespace-nowrap">
 											{slotBadge.label}
 										</span>
-										<span class="text-sm text-slate-500">{slot.duration} mins</span>
+										<span class="text-xs md:text-sm text-slate-500">{slot.duration} mins</span>
 									</div>
 									{#if slot.drill_description}
-										<p class="text-slate-600 mb-2">{slot.drill_description}</p>
+										<p class="text-sm md:text-base text-slate-600 mb-2">{slot.drill_description}</p>
 									{/if}
 									{#if slot.drill_skill_focus}
-										<div class="text-sm text-slate-500 mb-2">
+										<div class="text-xs md:text-sm text-slate-500 mb-2">
 											<span class="font-semibold">Skills:</span> {slot.drill_skill_focus}
 										</div>
 									{/if}
 									{#if slot.drill_min_players && slot.drill_max_players}
-										<div class="text-sm text-slate-500">
+										<div class="text-xs md:text-sm text-slate-500">
 											👥 {slot.drill_min_players}-{slot.drill_max_players} players
 										</div>
 									{/if}
@@ -148,30 +148,30 @@
 							</div>
 
 							{#if slot.drill_equipment}
-								<div class="bg-white rounded-lg p-3 mb-3 border border-slate-200">
-									<div class="text-sm font-semibold text-slate-700 mb-1">Equipment Needed:</div>
-									<div class="text-sm text-slate-600">{slot.drill_equipment}</div>
+								<div class="bg-white rounded-lg p-2 md:p-3 mb-2 md:mb-3 border border-slate-200">
+									<div class="text-xs md:text-sm font-semibold text-slate-700 mb-1">Equipment Needed:</div>
+									<div class="text-xs md:text-sm text-slate-600">{slot.drill_equipment}</div>
 								</div>
 							{/if}
 
 							{#if slot.drill_instructions}
-								<div class="bg-white rounded-lg p-3 mb-3 border border-slate-200">
-									<div class="text-sm font-semibold text-slate-700 mb-2">Instructions:</div>
-									<div class="text-sm text-slate-600 whitespace-pre-line">{slot.drill_instructions}</div>
+								<div class="bg-white rounded-lg p-2 md:p-3 mb-2 md:mb-3 border border-slate-200">
+									<div class="text-xs md:text-sm font-semibold text-slate-700 mb-2">Instructions:</div>
+									<div class="text-xs md:text-sm text-slate-600 whitespace-pre-line">{slot.drill_instructions}</div>
 								</div>
 							{/if}
 
 							{#if coaches.length > 0}
-								<div class="border-t border-slate-200 pt-3 mt-3">
-									<div class="text-sm font-semibold text-slate-700 mb-2">Assigned Coaches:</div>
+								<div class="border-t border-slate-200 pt-2 md:pt-3 mt-2 md:mt-3">
+									<div class="text-xs md:text-sm font-semibold text-slate-700 mb-2">Assigned Coaches:</div>
 									<div class="flex flex-wrap gap-2">
 										{#each coaches as coach}
-											<div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
-												<div class="w-6 h-6 bg-blue-200 text-blue-700 rounded-full flex items-center justify-center text-xs font-semibold">
+											<div class="flex items-center gap-1.5 md:gap-2 bg-blue-50 px-2 md:px-3 py-1 rounded-full">
+												<div class="w-5 h-5 md:w-6 md:h-6 bg-blue-200 text-blue-700 rounded-full flex items-center justify-center text-xs font-semibold">
 													{coach.name.charAt(0).toUpperCase()}
 												</div>
-												<span class="text-sm text-blue-900 font-medium">{coach.name}</span>
-												<span class="text-xs text-blue-600">({coach.role})</span>
+												<span class="text-xs md:text-sm text-blue-900 font-medium">{coach.name}</span>
+												<span class="text-[10px] md:text-xs text-blue-600">({coach.role})</span>
 											</div>
 										{/each}
 									</div>
@@ -186,20 +186,19 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
-	<div class="max-w-4xl mx-auto px-4 py-4">
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg print:hidden z-40">
+	<div class="px-4 py-4 flex items-center justify-between">
+		<a
+			href="/sessions"
+			onclick={(e) => { triggerGleam('back'); }}
+			class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+		>
+			{#if gleamingItem === 'back'}
+				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+			{/if}
+			<span class="relative z-10">← Back</span>
+		</a>
 		<div class="flex items-center gap-2">
-			<a
-				href="/sessions"
-				onclick={(e) => { triggerGleam('back'); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
-			>
-				{#if gleamingItem === 'back'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
-				{/if}
-				← Back
-			</a>
-			<div class="flex-1"></div>
 			<button
 				onclick={(e) => { triggerGleam('print'); print(); }}
 				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
