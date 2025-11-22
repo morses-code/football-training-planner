@@ -51,12 +51,12 @@
 	}
 </script>
 
-<div class="border-t border-slate-700 p-2 md:p-3">
+<div class="border-t border-slate-700 p-3 md:p-4">
 	{#if $user}
 		<!-- Logged in state -->
 		<a
 			href="/profile"
-			class="flex items-center hover:bg-slate-700 rounded-lg p-1 md:p-2 -m-1 md:-m-2 transition-colors relative group"
+			class="flex items-center hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors relative group"
 			class:justify-start={isExpanded}
 			class:justify-center={!isExpanded}
 			class:gap-4={isExpanded}
