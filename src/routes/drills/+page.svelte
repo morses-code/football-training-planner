@@ -34,7 +34,7 @@
 	}
 </script>
 
-<div class="max-w-6xl">
+<div class="w-full">
 	<div class="mb-4 md:mb-6">
 		<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-2">Drill Library</h1>
 		<p class="text-base md:text-lg text-slate-600">
@@ -155,13 +155,13 @@
 
 <!-- Sticky Action Bar -->
 {#if data.user}
-	<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-slate-800 border-t border-slate-700 z-40">
-		<div class="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+	<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+		<div class="px-3 md:px-4 py-2 md:py-3">
 			<div class="flex items-center justify-end">
 				<a
 					href="/drills/new"
 					onclick={(e) => { triggerGleam('new'); }}
-					class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+					class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm relative overflow-hidden"
 				>
 					{#if gleamingItem === 'new'}
 						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
@@ -176,5 +176,5 @@
 	</div>
 
 	<!-- Spacer to prevent content from being hidden behind sticky bar -->
-	<div class="h-20"></div>
+	<div class="h-12 md:h-16"></div>
 {/if}

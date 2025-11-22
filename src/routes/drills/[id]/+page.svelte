@@ -53,7 +53,7 @@
 	const badge = $derived(getCategoryBadge(data.drill.category));
 </script>
 
-<div class="max-w-4xl">
+<div class="w-full">
 	<!-- Header -->
 	<div class="mb-6">
 		<h1 class="text-4xl font-bold text-slate-900 mb-2">{data.drill.name}</h1>
@@ -103,12 +103,12 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg z-40">
-	<div class="px-3 md:px-4 py-3 md:py-4 flex items-center justify-between">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+	<div class="px-3 md:px-4 py-2 md:py-3 flex items-center justify-between">
 		<a
 			href="/drills"
 			onclick={(e) => { triggerGleam('back'); }}
-			class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+			class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
 		>
 			{#if gleamingItem === 'back'}
 				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
@@ -119,7 +119,7 @@
 			<a
 				href="/drills/{data.drill.id}/edit"
 				onclick={(e) => { triggerGleam('edit'); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+				class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm relative overflow-hidden"
 			>
 				{#if gleamingItem === 'edit'}
 					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
@@ -137,7 +137,7 @@
 			<button
 				onclick={(e) => { triggerGleam('delete'); deleteDrill(); }}
 				disabled={isDeleting}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 relative overflow-hidden"
+				class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 			>
 				{#if gleamingItem === 'delete'}
 					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
@@ -157,4 +157,4 @@
 </div>
 
 <!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-20"></div>
+<div class="h-12 md:h-16"></div>

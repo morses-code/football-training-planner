@@ -61,7 +61,7 @@
 	}
 </script>
 
-<div class="max-w-4xl">
+<div class="w-full">
 	<div class="mb-6">
 		<h1 class="text-4xl font-bold text-slate-900 mb-2">Add New Drill</h1>
 		<p class="text-lg text-slate-600">
@@ -221,14 +221,14 @@
 </div>
 
 <!-- Bottom Action Bar -->
-<div class="h-20"></div>
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-slate-800 border-t border-slate-700 z-40">
-	<div class="px-3 md:px-4 py-3 md:py-4">
+<div class="h-12 md:h-16"></div>
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+	<div class="px-3 md:px-4 py-2 md:py-3">
 		<div class="flex items-center gap-2">
 			<a
 				href="/drills"
 				onclick={(e) => { triggerGleam('cancel'); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+				class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
 			>
 				{#if gleamingItem === 'cancel'}
 					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
@@ -241,7 +241,7 @@
 				form="drill-form"
 				disabled={isSubmitting}
 				onclick={(e) => { if (!isSubmitting) triggerGleam('create'); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 relative overflow-hidden"
+				class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 			>
 				{#if gleamingItem === 'create'}
 					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>

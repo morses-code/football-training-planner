@@ -33,7 +33,7 @@
 	}>();
 </script>
 
-<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg z-40">
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-b border-slate-700 shadow-lg z-40 border-t">
 	<div class="{maxWidth} mx-auto px-4 py-4">
 		<div class="flex items-center gap-2">
 			{@render children()}
@@ -42,4 +42,4 @@
 </div>
 
 <!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-20"></div>
+<div class="h-12 md:h-16"></div>
