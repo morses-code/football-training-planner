@@ -63,6 +63,67 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+
+  -- Drills table
+  CREATE TABLE IF NOT EXISTS drills (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    duration INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    skill_focus TEXT NOT NULL,
+    equipment TEXT,
+    instructions TEXT,
+    min_players INTEGER,
+    max_players INTEGER,
+    created_by TEXT NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- Training sessions table
+  CREATE TABLE IF NOT EXISTS training_sessions (
+    id TEXT PRIMARY KEY,
+    session_date INTEGER NOT NULL,
+    start_time TEXT NOT NULL,
+    duration INTEGER NOT NULL DEFAULT 60,
+    notes TEXT,
+    created_by TEXT NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+  );
+
+  -- Session slots table (warmup, drills, small sided games)
+  CREATE TABLE IF NOT EXISTS session_slots (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    slot_type TEXT NOT NULL,
+    slot_order INTEGER NOT NULL,
+    drill_id TEXT,
+    duration INTEGER NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (session_id) REFERENCES training_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (drill_id) REFERENCES drills(id) ON DELETE SET NULL
+  );
+
+  -- Coach assignments table
+  CREATE TABLE IF NOT EXISTS coach_assignments (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    slot_id TEXT,
+    coach_id TEXT NOT NULL,
+    role TEXT NOT NULL,
+    task_type TEXT,
+    FOREIGN KEY (session_id) REFERENCES training_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (slot_id) REFERENCES session_slots(id) ON DELETE CASCADE,
+    FOREIGN KEY (coach_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_drills_category ON drills(category);
+  CREATE INDEX IF NOT EXISTS idx_training_sessions_date ON training_sessions(session_date);
+  CREATE INDEX IF NOT EXISTS idx_session_slots_session ON session_slots(session_id);
+  CREATE INDEX IF NOT EXISTS idx_coach_assignments_session ON coach_assignments(session_id);
+  CREATE INDEX IF NOT EXISTS idx_coach_assignments_coach ON coach_assignments(coach_id);
 `);
 
 export default db;

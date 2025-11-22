@@ -19,7 +19,7 @@
 
 <div class="flex h-screen overflow-hidden">
 	<VerticalNav />
-	<main class="flex-1 overflow-auto p-8 ml-16 transition-all duration-300">
+	<main class="flex-1 overflow-auto p-4 md:p-8 ml-16 transition-all duration-300">
 		{@render children()}
 	</main>
 </div>
