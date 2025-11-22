@@ -310,7 +310,7 @@
 		{#if selectingSlotIndex !== null}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick={(e) => { if (e.target === e.currentTarget) selectingSlotIndex = null; }}>
+			<div class="fixed inset-0 backdrop-blur-sm bg-slate-900/20 flex items-center justify-center p-4 z-50" onclick={(e) => { if (e.target === e.currentTarget) selectingSlotIndex = null; }}>
 				<div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
 					<div class="p-6 border-b border-slate-200">
 						<div class="flex items-center justify-between">
@@ -360,7 +360,7 @@
 		{#if assigningCoachSlotIndex !== null}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick={(e) => { if (e.target === e.currentTarget) assigningCoachSlotIndex = null; }}>
+			<div class="fixed inset-0 backdrop-blur-sm bg-slate-900/20 flex items-center justify-center p-4 z-50" onclick={(e) => { if (e.target === e.currentTarget) assigningCoachSlotIndex = null; }}>
 				<div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
 					<div class="p-6 border-b border-slate-200">
 						<div class="flex items-center justify-between">
