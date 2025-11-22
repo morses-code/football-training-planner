@@ -107,7 +107,7 @@
 				{@const badge = getCategoryBadge(drill.category)}
 				<a
 					href="/drills/{drill.id}"
-					class="block bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-lg transition-shadow"
+					class="flex flex-col bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-lg transition-shadow"
 				>
 					<div class="flex items-start justify-between mb-3">
 						<h3 class="text-base md:text-lg font-semibold text-slate-900">{drill.name}</h3>
@@ -115,7 +115,7 @@
 							{badge.label}
 						</span>
 					</div>
-					<p class="text-sm md:text-base text-slate-600 mb-3 md:mb-4 line-clamp-3">
+					<p class="text-sm md:text-base text-slate-600 mb-3 md:mb-4 line-clamp-3 flex-grow">
 						{drill.description}
 					</p>
 					<div class="flex items-center justify-between text-xs md:text-sm text-slate-500">
