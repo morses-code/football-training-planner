@@ -61,12 +61,12 @@
 	<a
 		{href}
 		onclick={handleClick}
-		class="flex items-center rounded-lg px-4 py-3 transition-all duration-200 hover:bg-slate-700 relative overflow-hidden"
+		class="flex items-center rounded-lg px-3 md:px-4 py-2 md:py-3 transition-all duration-200 hover:bg-slate-700 relative overflow-hidden"
 		class:justify-start={isExpanded}
 		class:justify-center={!isExpanded}
 		class:gap-4={isExpanded}
 	>
-		<NavIcon path={icon} class="h-6 w-6 flex-shrink-0 relative z-10" />
+		<NavIcon path={icon} class="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 relative z-10" />
 		<span
 			class="whitespace-nowrap text-sm font-medium transition-all duration-300 relative z-10"
 			class:opacity-0={!isExpanded}

@@ -115,19 +115,21 @@
 <nav
 	bind:this={navElement}
 	class="fixed left-0 top-0 h-full bg-slate-800 text-white shadow-lg transition-all duration-300 ease-in-out z-50"
-	class:w-64={isExpanded}
-	class:w-16={!isExpanded}
+	class:w-56={isExpanded}
+	class:md:w-64={isExpanded}
+	class:w-12={!isExpanded}
+	class:md:w-16={!isExpanded}
 >
 	<div class="flex h-full flex-col">
 		<!-- Toggle Button -->
 		<button
 			onclick={toggleNav}
-			class="flex h-16 items-center justify-center border-b border-slate-700 hover:bg-slate-700 transition-colors duration-200"
+			class="flex h-12 md:h-16 items-center justify-center border-b border-slate-700 hover:bg-slate-700 transition-colors duration-200"
 			aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
 		>
 			<NavIcon
 				path="M4 6h16M4 12h16M4 18h16"
-				class="h-6 w-6 transition-transform duration-300 {isExpanded ? '' : 'rotate-180'}"
+				class="h-5 w-5 md:h-6 md:w-6 transition-transform duration-300 {isExpanded ? '' : 'rotate-180'}"
 			/>
 		</button>
 

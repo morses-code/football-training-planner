@@ -43,10 +43,6 @@
 		}
 	}
 
-	function print() {
-		window.print();
-	}
-
 	function triggerGleam(item: string) {
 		gleamingItem = item;
 		setTimeout(() => {
@@ -107,8 +103,8 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg print:hidden z-40">
-	<div class="px-4 py-4 flex items-center justify-between">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-slate-800 border-t border-slate-700 shadow-lg z-40">
+	<div class="px-3 md:px-4 py-3 md:py-4 flex items-center justify-between">
 		<a
 			href="/drills"
 			onclick={(e) => { triggerGleam('back'); }}
@@ -120,23 +116,6 @@
 			← Back
 		</a>
 		<div class="flex items-center gap-2">
-			<button
-				onclick={(e) => { triggerGleam('print'); print(); }}
-				class="inline-flex items-center gap-1.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
-			>
-				{#if gleamingItem === 'print'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
-				{/if}
-				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-					/>
-				</svg>
-				<span class="relative z-10">Print</span>
-			</button>
 			<a
 				href="/drills/{data.drill.id}/edit"
 				onclick={(e) => { triggerGleam('edit'); }}
@@ -178,4 +157,4 @@
 </div>
 
 <!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-20 print:hidden"></div>
+<div class="h-20"></div>

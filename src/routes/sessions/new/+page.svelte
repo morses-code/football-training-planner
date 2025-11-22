@@ -426,8 +426,8 @@
 		{/if}
 
 		<!-- Actions -->
-		<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-t border-slate-700 print:hidden z-40">
-			<div class="px-4 py-4">
+		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-slate-800 border-t border-slate-700 z-40">
+			<div class="px-3 md:px-4 py-3 md:py-4">
 				<div class="flex items-center gap-2">
 					<a
 						href="/sessions"
@@ -461,4 +461,4 @@
 </div>
 
 <!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-20 print:hidden"></div>
+<div class="h-20"></div>

@@ -51,7 +51,7 @@
 	}
 </script>
 
-<div class="border-t border-slate-700 p-4">
+<div class="border-t border-slate-700 p-3 md:p-4">
 	{#if $user}
 		<!-- Logged in state -->
 		<a
@@ -61,8 +61,8 @@
 			class:justify-center={!isExpanded}
 			class:gap-4={isExpanded}
 		>
-			<div class="h-8 w-8 flex-shrink-0 text-slate-300">
-				<NavIcon path={avatarPaths[$user.avatar] || avatarPaths['user-circle']} class="h-8 w-8" />
+			<div class="h-6 w-6 md:h-8 md:w-8 flex-shrink-0 text-slate-300">
+				<NavIcon path={avatarPaths[$user.avatar] || avatarPaths['user-circle']} class="h-6 w-6 md:h-8 md:w-8" />
 			</div>
 			<div
 				class="transition-all duration-300 flex-1"
@@ -104,7 +104,7 @@
 		>
 			<NavIcon
 				path="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-				class="h-6 w-6 flex-shrink-0"
+				class="h-5 w-5 md:h-6 md:w-6 flex-shrink-0"
 			/>
 			<span
 				class="text-sm font-medium whitespace-nowrap transition-all duration-300"
