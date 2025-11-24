@@ -1,38 +1,62 @@
-# sv
+# Football Training Planner
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A modern web application for planning and managing Under 6s football training sessions. Built with SvelteKit, TypeScript, and Tailwind CSS.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- 📅 **Session Management** - Create, edit, and delete training sessions
+- 👥 **Player Management** - Track players and their assignments
+- 🏃 **Drill Library** - Organize and assign drills to training sessions
+- 📊 **Calendar View** - Visual overview of scheduled sessions
+- 👤 **User Profiles** - Manage coach accounts with customizable avatars
+- 🔐 **Secure Authentication** - Session-based auth with password management
+- 👨‍💼 **Admin Controls** - Admin-only user creation and management
+
+## Tech Stack
+
+- **SvelteKit 2** - Full-stack framework with Svelte 5 runes
+- **TypeScript** - Type-safe development
+- **Tailwind CSS v4** - Modern utility-first styling
+- **SQLite** - Local database with better-sqlite3
+- **Oslo.js** - Cryptographic utilities for auth
+
+## Getting Started
+
+Install dependencies:
 
 ```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Start the development server:
 
 ```sh
 npm run dev
 
-# or start the server and open the app in a new browser tab
+# or open in browser
 npm run dev -- --open
 ```
 
 ## Building
 
-To create a production version of your app:
+Create a production build:
 
 ```sh
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+Preview the production build:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```sh
+npm run preview
+```
+
+## Admin Access
+
+Default admin credentials:
+- Email: `system@example.com`
+- Password: `Admin123!`
+
+## License
+
+Private project
