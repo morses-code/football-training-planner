@@ -15,13 +15,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const user = db
 		.prepare(
 			`
-		SELECT id, email, name, password_hash, avatar
+		SELECT id, email, name, password_hash, avatar, must_change_password
 		FROM users
 		WHERE email = ?
 	`
 		)
 		.get(email) as
-		| { id: string; email: string; name: string; password_hash: string; avatar: string }
+		| { id: string; email: string; name: string; password_hash: string; avatar: string; must_change_password: number }
 		| undefined;
 
 	if (!user) {
@@ -56,6 +56,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	return json({
 		success: true,
 		user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar },
-		hasAssignments: assignmentCount.count > 0
+		hasAssignments: assignmentCount.count > 0,
+		mustChangePassword: user.must_change_password === 1
 	});
 };

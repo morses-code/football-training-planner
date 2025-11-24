@@ -67,6 +67,8 @@ export interface User {
 	name: string;
 	/** Avatar icon identifier */
 	avatar: string;
+	/** Account creation timestamp */
+	created_at: number;
 }
 
 /**
@@ -146,7 +148,7 @@ export function validateSessionToken(token: string): SessionValidationResult {
 		.prepare(
 			`
 		SELECT sessions.id, sessions.user_id, sessions.expires_at,
-		       users.id as user_id, users.email, users.name, users.avatar
+		       users.id as user_id, users.email, users.name, users.avatar, users.created_at
 		FROM sessions
 		INNER JOIN users ON sessions.user_id = users.id
 		WHERE sessions.id = ?
@@ -160,6 +162,7 @@ export function validateSessionToken(token: string): SessionValidationResult {
 				email: string;
 				name: string;
 				avatar: string;
+				created_at: number;
 		  }
 		| undefined;
 
@@ -177,7 +180,8 @@ export function validateSessionToken(token: string): SessionValidationResult {
 		id: row.user_id,
 		email: row.email,
 		name: row.name,
-		avatar: row.avatar
+		avatar: row.avatar,
+		created_at: row.created_at
 	};
 
 	// Check if session is expired

@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		const { email, password, name, avatar } = await request.json();
+		const { email, password, name, avatar, mustChangePassword } = await request.json();
 
 		// Validate input
 		if (!email || !password || !name) {
@@ -29,14 +29,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Create user
 		const passwordHash = hashPassword(password);
-		const result = db.prepare(`
-			INSERT INTO users (email, password_hash, name, avatar, created_at)
-			VALUES (?, ?, ?, ?, ?)
-		`).run(email, passwordHash, name, avatar || 'user', Date.now());
+		const userId = crypto.randomUUID();
+		
+		db.prepare(`
+			INSERT INTO users (id, email, password_hash, name, avatar, must_change_password, created_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+		`).run(userId, email, passwordHash, name, avatar || 'user', mustChangePassword ? 1 : 0, Math.floor(Date.now() / 1000));
 
 		return json({ 
 			success: true, 
-			userId: result.lastInsertRowid 
+			userId: userId
 		});
 	} catch (error) {
 		console.error('Error creating user:', error);

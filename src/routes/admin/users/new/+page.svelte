@@ -5,7 +5,8 @@
 		email: '',
 		password: '',
 		name: '',
-		avatar: 'user'
+		avatar: 'user',
+		mustChangePassword: true
 	});
 
 	let error = $state('');
@@ -127,32 +128,43 @@
 					/>
 				</div>
 
-				<!-- Avatar Selection -->
-				<div>
-					<label class="block text-sm font-semibold text-slate-700 mb-2">
-						Choose Avatar Icon
-					</label>
-					<div class="grid grid-cols-4 gap-2">
-						{#each avatars as avatar}
-							<button
-								type="button"
-								onclick={() => formData.avatar = avatar.name}
-								class="aspect-square p-3 flex items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
-								class:border-purple-500={formData.avatar === avatar.name}
-								class:bg-purple-50={formData.avatar === avatar.name}
-								class:border-slate-300={formData.avatar !== avatar.name}
-								class:bg-slate-50={formData.avatar !== avatar.name}
-							>
-								<svg class="h-8 w-8" class:text-purple-600={formData.avatar === avatar.name} class:text-slate-600={formData.avatar !== avatar.name} fill="currentColor" viewBox="0 0 24 24">
-									<path d={avatar.path} />
-								</svg>
-							</button>
-						{/each}
+					<!-- Avatar Selection -->
+					<div>
+						<label class="block text-sm font-semibold text-slate-700 mb-2">
+							Choose Avatar Icon
+						</label>
+						<div class="grid grid-cols-4 gap-2">
+							{#each avatars as avatar}
+								<button
+									type="button"
+									onclick={() => formData.avatar = avatar.name}
+									class="aspect-square p-3 flex items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+									class:border-purple-500={formData.avatar === avatar.name}
+									class:bg-purple-50={formData.avatar === avatar.name}
+									class:border-slate-300={formData.avatar !== avatar.name}
+									class:bg-slate-50={formData.avatar !== avatar.name}
+								>
+									<svg class="h-8 w-8" class:text-purple-600={formData.avatar === avatar.name} class:text-slate-600={formData.avatar !== avatar.name} fill="currentColor" viewBox="0 0 24 24">
+										<path d={avatar.path} />
+									</svg>
+								</button>
+							{/each}
+						</div>
 					</div>
-				</div>
-			</div>
 
-			<!-- Form Actions -->
+					<!-- Require Password Change -->
+					<div class="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+						<input
+							id="mustChangePassword"
+							type="checkbox"
+							bind:checked={formData.mustChangePassword}
+							class="w-5 h-5 text-purple-600 rounded border-slate-300 focus:ring-2 focus:ring-purple-200"
+						/>
+						<label for="mustChangePassword" class="text-sm font-medium text-slate-700 cursor-pointer">
+							Require password change on first login
+						</label>
+					</div>
+				</div>			<!-- Form Actions -->
 			<div class="flex gap-3 justify-end pt-6">
 				<a
 					href="/admin/users"

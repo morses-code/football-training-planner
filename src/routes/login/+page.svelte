@@ -26,8 +26,14 @@
 					// Invalidate all data to refresh user state
 					await invalidateAll();
 					setTimeout(() => {
-						// Redirect to assignments if user has any, otherwise home
-						goto(data.hasAssignments ? '/assignments' : '/');
+						// Redirect based on user status
+						if (data.mustChangePassword) {
+							goto('/change-password');
+						} else if (data.hasAssignments) {
+							goto('/assignments');
+						} else {
+							goto('/');
+						}
 					}, 1500);
 				}
 			})
@@ -38,61 +44,78 @@
 	}
 </script>
 
-<div class="max-w-4xl">
-	<h1 class="text-4xl font-bold text-slate-900 mb-4">Welcome Back</h1>
-	<p class="text-lg text-slate-600 mb-6">
-		Sign in to your account to continue.
-	</p>
+<div class="w-full">
+	<!-- Hero Header with Gradient -->
+	<div class="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white">
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-3xl md:text-5xl font-bold mb-2">Welcome Back</h1>
+				<p class="text-lg md:text-xl text-blue-100">
+					Sign in to your account to continue
+				</p>
+			</div>
+			<div class="hidden md:flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30">
+				<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+				</svg>
+			</div>
+		</div>
+	</div>
 
-	<div class="max-w-md">
-		<form onsubmit={handleSubmit} class="bg-white rounded-lg shadow p-6">
-			{#if errorMessage}
-				<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-					<p class="text-red-700 text-sm">{errorMessage}</p>
+	<!-- Login Form -->
+	<div class="max-w-md mx-auto">
+		<div class="bg-white rounded-xl shadow-lg border-2 border-slate-200 p-6">
+			<form onsubmit={handleSubmit}>
+				{#if errorMessage}
+					<div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+						{errorMessage}
+					</div>
+				{/if}
+
+				<div class="space-y-4">
+					<!-- Email -->
+					<div>
+						<label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
+							Email Address
+						</label>
+						<input
+							type="email"
+							id="email"
+							bind:value={formData.email}
+							required
+							class="w-full px-4 py-2 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+							placeholder="coach@example.com"
+						/>
+					</div>
+
+					<!-- Password -->
+					<div>
+						<label for="password" class="block text-sm font-semibold text-slate-700 mb-2">
+							Password
+						</label>
+						<input
+							type="password"
+							id="password"
+							bind:value={formData.password}
+							required
+							class="w-full px-4 py-2 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+							placeholder="Enter your password"
+						/>
+					</div>
 				</div>
-			{/if}
 
-			<div class="flex flex-col mb-6">
-				<label for="email" class="text-sm font-semibold text-slate-700 mb-2">
-					Email <span class="text-red-500">*</span>
-				</label>
-				<input
-					type="email"
-					id="email"
-					bind:value={formData.email}
-					required
-					class="px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-					placeholder="john@example.com"
-				/>
-			</div>
-
-			<div class="flex flex-col mb-6">
-				<label for="password" class="text-sm font-semibold text-slate-700 mb-2">
-					Password <span class="text-red-500">*</span>
-				</label>
-				<input
-					type="password"
-					id="password"
-					bind:value={formData.password}
-					required
-					class="px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-					placeholder="Enter your password"
-				/>
-			</div>
-
-			<button
-				type="submit"
-				disabled={isSubmitting}
-				class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-			>
-				{isSubmitting ? 'Signing In...' : 'Sign In'}
-			</button>
-
-			<p class="text-sm text-slate-600 text-center mt-4">
-				Don't have an account?
-				<a href="/register" class="text-blue-600 hover:underline font-semibold">Create one</a>
-			</p>
-		</form>
+				<!-- Submit Button -->
+				<div class="pt-6">
+					<button
+						type="submit"
+						disabled={isSubmitting}
+						class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-semibold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						{isSubmitting ? 'Signing In...' : 'Sign In'}
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 
