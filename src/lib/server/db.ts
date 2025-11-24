@@ -53,7 +53,8 @@ db.exec(`
     name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
     avatar TEXT NOT NULL DEFAULT 'user-circle',
-    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    must_change_password INTEGER DEFAULT 0
   );
 
   CREATE TABLE IF NOT EXISTS sessions (
