@@ -128,4 +128,32 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_coach_assignments_coach ON coach_assignments(coach_id);
 `);
 
+// Initialize admin user if it doesn't exist (for production deployments)
+try {
+	const adminExists = db.prepare('SELECT id FROM users WHERE email = ?').get('system@example.com');
+	if (!adminExists) {
+		// Inline hash function to avoid circular dependency
+		const { sha256 } = require('@oslojs/crypto/sha2');
+		const { encodeHexLowerCase } = require('@oslojs/encoding');
+		const hashPassword = (password: string) => {
+			const encoder = new TextEncoder();
+			const data = encoder.encode(password);
+			const hashBuffer = sha256(data);
+			return encodeHexLowerCase(hashBuffer);
+		};
+		
+		const adminId = crypto.randomUUID();
+		const passwordHash = hashPassword('Admin123!');
+		
+		db.prepare(`
+			INSERT INTO users (id, email, name, password_hash, avatar, created_at)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000));
+		
+		console.log('✅ Created admin user: system@example.com');
+	}
+} catch (error) {
+	console.error('Note: Admin user initialization skipped:', error);
+}
+
 export default db;
