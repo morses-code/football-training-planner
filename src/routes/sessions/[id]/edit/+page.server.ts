@@ -46,8 +46,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Load all drills for selection
 	const drills = db.prepare('SELECT * FROM drills ORDER BY category, name').all();
 	
-	// Load all users (potential coaches)
-	const coaches = db.prepare('SELECT id, name, email, avatar FROM users ORDER BY name').all();
+	// Load all users (potential coaches), excluding system user
+	const coaches = db.prepare(`
+		SELECT id, name, email, avatar 
+		FROM users 
+		WHERE email != 'system@internal.app'
+		ORDER BY name
+	`).all();
 
 	// Group coaches by slot
 	const slotCoaches: Record<string, any[]> = {};

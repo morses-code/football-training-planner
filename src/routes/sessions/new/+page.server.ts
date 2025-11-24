@@ -10,8 +10,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Load all drills for selection
 	const drills = db.prepare('SELECT * FROM drills ORDER BY category, name').all();
 	
-	// Load all users (potential coaches)
-	const coaches = db.prepare('SELECT id, name, email, avatar FROM users ORDER BY name').all();
+	// Load all users (potential coaches), excluding system user
+	const coaches = db.prepare(`
+		SELECT id, name, email, avatar 
+		FROM users 
+		WHERE email != 'system@example.com'
+		ORDER BY name
+	`).all();
 	
 	return { drills, coaches };
 };

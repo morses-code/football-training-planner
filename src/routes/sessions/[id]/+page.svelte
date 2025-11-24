@@ -109,8 +109,8 @@
 
 		<div class="space-y-4 md:space-y-6">
 			<!-- Pre-Session Setup -->
-			{@const setupCoaches = Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup') || []}
-			{#if setupCoaches.length > 0}
+			{#if Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup')?.length > 0}
+				{@const setupCoaches = Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup') || []}
 				<div class="relative">
 					<!-- Timeline connector -->
 					<div class="absolute left-5 md:left-6 top-10 md:top-12 bottom-0 w-0.5 bg-slate-200 -mb-4 md:-mb-6"></div>
