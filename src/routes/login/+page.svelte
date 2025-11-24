@@ -26,7 +26,8 @@
 					// Invalidate all data to refresh user state
 					await invalidateAll();
 					setTimeout(() => {
-						goto('/');
+						// Redirect to assignments if user has any, otherwise home
+						goto(data.hasAssignments ? '/assignments' : '/');
 					}, 1500);
 				}
 			})

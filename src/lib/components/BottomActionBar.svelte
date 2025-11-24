@@ -33,7 +33,7 @@
 	}>();
 </script>
 
-<div class="fixed bottom-0 left-16 right-0 bg-slate-800 border-b border-slate-700 shadow-lg z-40 border-t">
+<div class="fixed bottom-0 left-16 right-0 bg-slate-800 shadow-lg z-40">
 	<div class="{maxWidth} mx-auto px-4 py-4">
 		<div class="flex items-center gap-2">
 			{@render children()}

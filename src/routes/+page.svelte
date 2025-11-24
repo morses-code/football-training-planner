@@ -4,7 +4,7 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<div class="max-w-4xl">
+<div class="w-full">
 	<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">
 		Welcome{#if data.user}, {data.user.name}{/if}
 	</h1>

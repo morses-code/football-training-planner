@@ -342,27 +342,48 @@
 						</div>
 					</div>
 					<div class="p-6 overflow-y-auto max-h-[60vh]">
-						<div class="grid md:grid-cols-2 gap-4">
-							{#each data.drills as drill}
-								<button
-									type="button"
-									onclick={() => assignDrill(selectingSlotIndex!, drill.id)}
-									class="text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all"
-								>
-									<div class="flex items-start justify-between mb-2">
-										<h4 class="font-semibold text-slate-900">{drill.name}</h4>
-										<span class="px-2 py-1 text-xs font-medium rounded {getCategoryColor(drill.category)}">
-											{getCategoryLabel(drill.category)}
-										</span>
-									</div>
-									<p class="text-sm text-slate-600 mb-2 line-clamp-2">{drill.description}</p>
-									<div class="flex gap-3 text-xs text-slate-500">
-										<span>⏱️ {drill.duration} mins</span>
-										<span>👥 {drill.min_players}-{drill.max_players} players</span>
-									</div>
-								</button>
-							{/each}
-						</div>
+						{#if selectingSlotIndex !== null}
+							{@const currentSlotType = slots[selectingSlotIndex].type}
+							{@const filteredDrills = data.drills.filter((drill: any) => {
+								if (currentSlotType === 'warmup') {
+									return drill.category === 'warmup';
+								} else if (currentSlotType === 'small_sided') {
+									return drill.category === 'small_sided';
+								} else {
+									// Regular drill slots: show everything except warmup and small_sided
+									return drill.category !== 'warmup' && drill.category !== 'small_sided';
+								}
+							})}
+							
+							{#if filteredDrills.length > 0}
+								<div class="grid md:grid-cols-2 gap-4">
+									{#each filteredDrills as drill}
+										<button
+											type="button"
+											onclick={() => assignDrill(selectingSlotIndex!, drill.id)}
+											class="text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all"
+										>
+											<div class="flex items-start justify-between mb-2">
+												<h4 class="font-semibold text-slate-900">{drill.name}</h4>
+												<span class="px-2 py-1 text-xs font-medium rounded {getCategoryColor(drill.category)}">
+													{getCategoryLabel(drill.category)}
+												</span>
+											</div>
+											<p class="text-sm text-slate-600 mb-2 line-clamp-2">{drill.description}</p>
+											<div class="flex gap-3 text-xs text-slate-500">
+												<span>⏱️ {drill.duration} mins</span>
+												<span>👥 {drill.min_players}-{drill.max_players} players</span>
+											</div>
+										</button>
+									{/each}
+								</div>
+							{:else}
+								<div class="text-center py-8">
+									<p class="text-slate-500 mb-2">No {getCategoryLabel(currentSlotType)} drills available</p>
+									<p class="text-sm text-slate-400">Create a drill in the appropriate category first</p>
+								</div>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -438,7 +459,7 @@
 		{/if}
 
 		<!-- Actions -->
-		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
 			<div class="px-3 md:px-4 py-2 md:py-3">
 				<div class="flex items-center gap-2">
 					<a

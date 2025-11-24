@@ -4,7 +4,7 @@
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<div class="max-w-4xl">
+<div class="w-full">
 	<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">About Graig Villa Dinos</h1>
 	<p class="text-base md:text-lg text-slate-600 mb-4 md:mb-6">
 		Under 6s Football Coaching Programme

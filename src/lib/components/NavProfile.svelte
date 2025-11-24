@@ -51,19 +51,17 @@
 	}
 </script>
 
-<div class="border-t border-slate-700 p-3 md:p-4">
+<div class="border-t border-slate-700 px-3 md:px-4">
 	{#if $user}
 		<!-- Logged in state -->
 		<a
 			href="/profile"
-			class="flex items-center hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors relative group"
+			class="flex items-center hover:bg-slate-700 px-3 md:px-4 py-2 md:py-3 -mx-3 md:-mx-4 transition-colors"
 			class:justify-start={isExpanded}
 			class:justify-center={!isExpanded}
 			class:gap-4={isExpanded}
 		>
-			<div class="h-6 w-6 md:h-8 md:w-8 flex-shrink-0 text-slate-300">
-				<NavIcon path={avatarPaths[$user.avatar] || avatarPaths['user-circle']} class="h-6 w-6 md:h-8 md:w-8" />
-			</div>
+			<NavIcon path={avatarPaths[$user.avatar] || avatarPaths['user-circle']} class="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
 			<div
 				class="transition-all duration-300 flex-1"
 				class:opacity-0={!isExpanded}
@@ -74,15 +72,6 @@
 				<p class="text-sm font-medium whitespace-nowrap">{$user.name}</p>
 				<p class="text-xs text-slate-400 whitespace-nowrap">{$user.email}</p>
 			</div>
-			
-			<!-- Tooltip for collapsed state -->
-			{#if !isExpanded}
-				<div
-					class="absolute left-full ml-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-r-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
-				>
-					Profile
-				</div>
-			{/if}
 		</a>
 		
 		{#if isExpanded}
@@ -97,7 +86,7 @@
 		<!-- Logged out state -->
 		<a
 			href="/login"
-			class="flex items-center hover:bg-slate-700 rounded-lg p-2 -m-2 transition-colors relative group"
+			class="flex items-center hover:bg-slate-700 px-3 md:px-4 py-2 md:py-3 -mx-3 md:-mx-4 transition-colors"
 			class:justify-start={isExpanded}
 			class:justify-center={!isExpanded}
 			class:gap-4={isExpanded}
@@ -113,17 +102,8 @@
 				class:w-0={!isExpanded}
 				class:overflow-hidden={!isExpanded}
 			>
-				Sign in
-			</span>
-			
-			<!-- Tooltip for collapsed state -->
-			{#if !isExpanded}
-				<div
-					class="absolute left-full ml-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-r-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
-				>
-					Sign in
-				</div>
-			{/if}
-		</a>
+			Sign in
+		</span>
+	</a>
 	{/if}
 </div>

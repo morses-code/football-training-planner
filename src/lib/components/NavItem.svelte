@@ -39,6 +39,7 @@
 		icon,
 		isExpanded,
 		isGleaming,
+		badge,
 		onGleam,
 		onNavigate
 	} = $props<{
@@ -47,6 +48,7 @@
 		icon: string;
 		isExpanded: boolean;
 		isGleaming: boolean;
+		badge?: number;
 		onGleam: () => void;
 		onNavigate?: () => void;
 	}>();
@@ -66,7 +68,16 @@
 		class:justify-center={!isExpanded}
 		class:gap-4={isExpanded}
 	>
-		<NavIcon path={icon} class="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 relative z-10" />
+		<div class="relative">
+			<NavIcon path={icon} class="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 relative z-10" />
+			{#if badge}
+				<span
+					class="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center z-20"
+				>
+					{badge}
+				</span>
+			{/if}
+		</div>
 		<span
 			class="whitespace-nowrap text-sm font-medium transition-all duration-300 relative z-10"
 			class:opacity-0={!isExpanded}

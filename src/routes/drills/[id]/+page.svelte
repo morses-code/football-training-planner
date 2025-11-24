@@ -103,7 +103,7 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
 	<div class="px-3 md:px-4 py-2 md:py-3 flex items-center justify-between">
 		<a
 			href="/drills"

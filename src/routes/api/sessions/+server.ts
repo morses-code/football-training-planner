@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const data = await request.json();
 		
-		const { sessionDate, startTime, duration, notes, slots, coaches } = data;
+		const { sessionDate, startTime, duration, notes, setupNotes, slots, coaches } = data;
 
 		// Validate required fields
 		if (!sessionDate || !startTime) {
@@ -30,12 +30,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				VALUES (?, ?, ?, ?, ?, ?)
 			`);
 
+			const sessionNotes = [notes, setupNotes ? `Setup: ${setupNotes}` : null]
+				.filter(Boolean)
+				.join('\n\n');
+
 			sessionStmt.run(
 				sessionId,
 				sessionDate,
 				startTime,
 				duration || 60,
-				notes || null,
+				sessionNotes || null,
 				locals.user.id
 			);
 
@@ -71,7 +75,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 				coaches.forEach((assignment: any) => {
 					// Map slotIndex to actual slot ID
-					const slotId = assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null;
+					// -1 indicates setup task (no slot)
+					const slotId = assignment.slotIndex === -1 
+						? null 
+						: (assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null);
 					
 					coachStmt.run(
 						crypto.randomUUID(),

@@ -46,8 +46,16 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		expires: session.expiresAt
 	});
 
+	// Check if user has any assignments
+	const assignmentCount = db.prepare(`
+		SELECT COUNT(*) as count
+		FROM coach_assignments
+		WHERE coach_id = ?
+	`).get(user.id) as { count: number };
+
 	return json({
 		success: true,
-		user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }
+		user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar },
+		hasAssignments: assignmentCount.count > 0
 	});
 };

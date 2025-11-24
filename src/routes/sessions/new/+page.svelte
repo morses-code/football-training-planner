@@ -9,8 +9,11 @@
 		date: '',
 		time: '17:30',
 		duration: 60,
-		notes: ''
+		notes: '',
+		setupNotes: 'Set up 3 pitches (20x28 yards each) with small goals and cones'
 	});
+
+	let setupCoaches = $state<Coach[]>([]);
 
 	let slots = $state<Slot[]>([
 		{ id: '1', type: 'warmup', name: 'Warm-up', duration: 10, drillId: null, drill: null, coaches: [] },
@@ -23,6 +26,7 @@
 	let error = $state<string | null>(null);
 	let selectingSlotIndex = $state<number | null>(null);
 	let assigningCoachSlotIndex = $state<number | null>(null);
+	let assigningSetupCoach = $state(false);
 	let gleamingItem = $state<string | null>(null);
 
 	function triggerGleam(item: string) {
@@ -63,8 +67,20 @@
 		assigningCoachSlotIndex = null;
 	}
 
+	function addCoachToSetup(coachId: string, role: string) {
+		const coach = data.coaches.find((c: Coach) => c.id === coachId);
+		if (coach && !setupCoaches.find((c: Coach) => c.id === coachId)) {
+			setupCoaches.push({ ...coach, role } as Coach);
+		}
+		assigningSetupCoach = false;
+	}
+
 	function removeCoachFromSlot(slotIndex: number, coachId: string) {
 		slots[slotIndex].coaches = slots[slotIndex].coaches.filter((c) => c.id !== coachId);
+	}
+
+	function removeCoachFromSetup(coachId: string) {
+		setupCoaches = setupCoaches.filter((c) => c.id !== coachId);
 	}
 
 	async function handleSubmit() {
@@ -78,7 +94,19 @@
 				coachId: string;
 				role: string;
 				slotIndex: number;
+				taskType?: string;
 			}> = [];
+			
+			// Add setup coaches (slotIndex: -1 to indicate pre-session setup)
+			setupCoaches.forEach((coach: Coach) => {
+				coachAssignments.push({
+					slotId: null,
+					coachId: coach.id,
+					role: coach.role,
+					slotIndex: -1,
+					taskType: 'setup'
+				});
+			});
 			
 			slots.forEach((slot: Slot, index: number) => {
 				slot.coaches.forEach((coach: Coach) => {
@@ -99,6 +127,7 @@
 					startTime: sessionData.time,
 					duration: sessionData.duration,
 					notes: sessionData.notes,
+					setupNotes: sessionData.setupNotes,
 					slots: slots.map((slot: Slot) => ({
 						type: slot.type,
 						drillId: slot.drillId,
@@ -209,6 +238,60 @@
 					placeholder="Any special notes or reminders for this session..."
 					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
 				></textarea>
+			</div>
+		</div>
+
+		<!-- Pitch Setup Section -->
+		<div class="bg-white rounded-lg shadow p-6 mb-6">
+			<h2 class="text-xl font-semibold text-slate-800 mb-4">Pre-Session Setup</h2>
+			
+			<div class="mb-4">
+				<div class="block text-sm font-semibold text-slate-700 mb-2">
+					Setup Instructions
+				</div>
+				<div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-700">
+					{sessionData.setupNotes}
+				</div>
+			</div>
+
+			<!-- Setup Coaches -->
+			<div>
+				<div class="flex items-center justify-between mb-3">
+					<div class="block text-sm font-semibold text-slate-700">
+						Assigned Coaches
+					</div>
+					<button
+						type="button"
+						onclick={() => assigningSetupCoach = true}
+						class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+					>
+						+ Assign Coach
+					</button>
+				</div>
+				
+				{#if setupCoaches.length > 0}
+					<div class="space-y-2">
+						{#each setupCoaches as coach}
+							<div class="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+								<div class="flex items-center gap-2">
+									<span class="text-sm font-medium text-slate-900">{coach.name}</span>
+									<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+										{coach.role}
+									</span>
+								</div>
+								<button
+									type="button"
+									onclick={() => removeCoachFromSetup(coach.id)}
+									class="text-red-600 hover:text-red-700 text-sm"
+								>
+									Remove
+								</button>
+							</div>
+						{/each}
+					</div>
+				{:else}
+					<p class="text-sm text-slate-500 italic">No coaches assigned to setup yet</p>
+				{/if}
 			</div>
 		</div>
 
@@ -330,27 +413,48 @@
 						</div>
 					</div>
 					<div class="p-6 overflow-y-auto max-h-[60vh]">
-						<div class="grid md:grid-cols-2 gap-4">
-							{#each data.drills as drill}
-								<button
-									type="button"
-									onclick={() => assignDrill(selectingSlotIndex!, drill.id)}
-									class="text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all"
-								>
-									<div class="flex items-start justify-between mb-2">
-										<h4 class="font-semibold text-slate-900">{drill.name}</h4>
-										<span class="px-2 py-1 text-xs font-medium rounded {getCategoryColor(drill.category)}">
-											{getCategoryLabel(drill.category)}
-										</span>
-									</div>
-									<p class="text-sm text-slate-600 mb-2 line-clamp-2">{drill.description}</p>
-									<div class="flex gap-3 text-xs text-slate-500">
-										<span>⏱️ {drill.duration} mins</span>
-										<span>👥 {drill.min_players}-{drill.max_players} players</span>
-									</div>
-								</button>
-							{/each}
-						</div>
+						{#if selectingSlotIndex !== null}
+							{@const currentSlotType = slots[selectingSlotIndex].type}
+							{@const filteredDrills = data.drills.filter((drill: Drill) => {
+								if (currentSlotType === 'warmup') {
+									return drill.category === 'warmup';
+								} else if (currentSlotType === 'small_sided') {
+									return drill.category === 'small_sided';
+								} else {
+									// Regular drill slots: show everything except warmup and small_sided
+									return drill.category !== 'warmup' && drill.category !== 'small_sided';
+								}
+							})}
+							
+							{#if filteredDrills.length > 0}
+								<div class="grid md:grid-cols-2 gap-4">
+									{#each filteredDrills as drill}
+										<button
+											type="button"
+											onclick={() => assignDrill(selectingSlotIndex!, drill.id)}
+											class="text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all"
+										>
+											<div class="flex items-start justify-between mb-2">
+												<h4 class="font-semibold text-slate-900">{drill.name}</h4>
+												<span class="px-2 py-1 text-xs font-medium rounded {getCategoryColor(drill.category)}">
+													{getCategoryLabel(drill.category)}
+												</span>
+											</div>
+											<p class="text-sm text-slate-600 mb-2 line-clamp-2">{drill.description}</p>
+											<div class="flex gap-3 text-xs text-slate-500">
+												<span>⏱️ {drill.duration} mins</span>
+												<span>👥 {drill.min_players}-{drill.max_players} players</span>
+											</div>
+										</button>
+									{/each}
+								</div>
+							{:else}
+								<div class="text-center py-8">
+									<p class="text-slate-500 mb-2">No {getCategoryLabel(currentSlotType)} drills available</p>
+									<p class="text-sm text-slate-400">Create a drill in the appropriate category first</p>
+								</div>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -425,8 +529,70 @@
 			</div>
 		{/if}
 
+		<!-- Setup Coach Assignment Modal -->
+		{#if assigningSetupCoach}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="fixed inset-0 backdrop-blur-sm bg-slate-900/20 flex items-center justify-center p-4 z-50" onclick={(e) => { if (e.target === e.currentTarget) assigningSetupCoach = false; }}>
+				<div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+					<div class="p-6 border-b border-slate-200">
+						<div class="flex items-center justify-between">
+							<h3 class="text-xl font-semibold text-slate-900">
+								Assign Coach to Setup
+							</h3>
+							<button
+								type="button"
+								onclick={() => assigningSetupCoach = false}
+								class="text-slate-400 hover:text-slate-600"
+								aria-label="Close coach assignment modal"
+							>
+								<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
+					</div>
+					<div class="p-6">
+						<div class="space-y-3">
+							{#each data.coaches as coach}
+								<div class="border border-slate-200 rounded-lg p-4">
+									<div class="flex items-center justify-between mb-3">
+										<div class="flex items-center gap-3">
+											<div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">
+												{coach.name.charAt(0).toUpperCase()}
+											</div>
+											<div>
+												<div class="font-semibold text-slate-900">{coach.name}</div>
+												<div class="text-sm text-slate-500">{coach.email}</div>
+											</div>
+										</div>
+									</div>
+									<div class="flex gap-2">
+										<button
+											type="button"
+											onclick={() => addCoachToSetup(coach.id, 'lead')}
+											class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors"
+										>
+											Lead Setup
+										</button>
+										<button
+											type="button"
+											onclick={() => addCoachToSetup(coach.id, 'assistant')}
+											class="flex-1 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded transition-colors"
+										>
+											Assistant
+										</button>
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+
 		<!-- Actions -->
-		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
 			<div class="px-3 md:px-4 py-2 md:py-3">
 				<div class="flex items-center gap-2">
 					<a

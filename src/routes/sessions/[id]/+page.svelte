@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import type { PageData } from './$types';
 	import BottomActionBar from '$lib/components/BottomActionBar.svelte';
 	import ActionButton from '$lib/components/ActionButton.svelte';
@@ -16,6 +17,15 @@
 		month: 'long', 
 		day: 'numeric' 
 	});
+
+	// Handle back navigation
+	function handleBack(e: MouseEvent) {
+		e.preventDefault();
+		triggerGleam('back');
+		if (browser) {
+			window.history.back();
+		}
+	}
 
 	// Get category badge color
 	function getCategoryColor(category: string) {
@@ -182,18 +192,17 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t border-slate-200 shadow-lg z-40">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
 	<div class="px-3 md:px-4 py-2 md:py-3 flex items-center justify-between">
-		<a
-			href="/sessions"
-			onclick={(e) => { triggerGleam('back'); }}
+		<button
+			onclick={handleBack}
 			class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
 		>
 			{#if gleamingItem === 'back'}
 				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
 			{/if}
 			<span class="relative z-10">← Back</span>
-		</a>
+		</button>
 		<div class="flex items-center gap-2">
 			<a
 				href="/sessions/{data.session.id}/edit"
