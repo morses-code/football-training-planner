@@ -37,6 +37,8 @@
  */
 import Database from 'better-sqlite3';
 import { join } from 'path';
+import { sha256 } from '@oslojs/crypto/sha2';
+import { encodeHexLowerCase } from '@oslojs/encoding';
 
 // Use environment variable for database path, fallback to local path
 const dbPath = process.env.DATABASE_PATH || join(process.cwd(), 'app.db');
@@ -133,9 +135,7 @@ db.exec(`
 try {
 	const adminExists = db.prepare('SELECT id FROM users WHERE email = ?').get('system@example.com');
 	if (!adminExists) {
-		// Inline hash function to avoid circular dependency
-		const { sha256 } = require('@oslojs/crypto/sha2');
-		const { encodeHexLowerCase } = require('@oslojs/encoding');
+		// Hash password inline
 		const hashPassword = (password: string) => {
 			const encoder = new TextEncoder();
 			const data = encoder.encode(password);
@@ -147,14 +147,14 @@ try {
 		const passwordHash = hashPassword('Admin123!');
 		
 		db.prepare(`
-			INSERT INTO users (id, email, name, password_hash, avatar, created_at)
-			VALUES (?, ?, ?, ?, ?, ?)
-		`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000));
+			INSERT INTO users (id, email, name, password_hash, avatar, created_at, must_change_password)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+		`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000), 0);
 		
-		console.log('✅ Created admin user: system@example.com');
+		console.log('✅ Created admin user: system@example.com / Admin123!');
 	}
 } catch (error) {
-	console.error('Note: Admin user initialization skipped:', error);
+	console.error('⚠️ Admin user initialization error:', error);
 }
 
 export default db;
