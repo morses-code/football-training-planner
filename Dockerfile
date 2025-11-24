@@ -23,15 +23,14 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies (including tsx for init script)
+# Install production dependencies + tsx for init
 RUN npm ci
 
-# Copy built app from builder
+# Copy built app and scripts from builder
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package.json ./
-
-# Copy initialization scripts
 COPY scripts ./scripts
+COPY src ./src
 
 # Create directory for SQLite database
 RUN mkdir -p /app/data
@@ -44,5 +43,5 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV DATABASE_PATH=/app/data/app.db
 
-# Start the app with initialization
-CMD ["npm", "run", "start"]
+# Initialize DB and start server
+CMD tsx scripts/init-db.ts && node build
