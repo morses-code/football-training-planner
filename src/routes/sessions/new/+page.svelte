@@ -31,14 +31,6 @@
 	let selectingSlotIndex = $state<number | null>(null);
 	let assigningCoachSlotIndex = $state<number | null>(null);
 	let assigningSetupCoach = $state(false);
-	let gleamingItem = $state<string | null>(null);
-
-	function triggerGleam(item: string) {
-		gleamingItem = item;
-		setTimeout(() => {
-			gleamingItem = null;
-		}, 600);
-	}
 
 	function selectDrillForSlot(slotIndex: number) {
 		selectingSlotIndex = slotIndex;
@@ -627,43 +619,28 @@
 			</div>
 		{/if}
 
-		<!-- Actions -->
-		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t-2 border-slate-200 shadow-xl z-40">
-			<div class="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
-				<div class="flex items-center gap-3">
-					<a
-						href="/sessions"
-						onclick={(e) => { triggerGleam('cancel'); }}
-						class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all text-sm font-semibold relative overflow-hidden"
-					>
-						{#if gleamingItem === 'cancel'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
-						{/if}
-						<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-						</svg>
-						<span class="relative z-10">Cancel</span>
-					</a>
-					<div class="flex-1"></div>
-					<button
-						type="submit"
-						disabled={isSubmitting}
-						onclick={(e) => { if (!isSubmitting) triggerGleam('create'); }}
-						class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg text-white rounded-lg transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
-					>
-						{#if gleamingItem === 'create'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
-						{/if}
-						<svg class="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-						</svg>
-						<span class="relative z-10">{isSubmitting ? 'Creating...' : 'Create Session'}</span>
-					</button>
-				</div>
-			</div>
+		<!-- Action Buttons -->
+		<div class="flex items-center justify-end gap-3 pt-6">
+			<a
+				href="/sessions"
+				class="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all font-semibold cursor-pointer"
+			>
+				<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+				<span>Cancel</span>
+			</a>
+			<button
+				type="submit"
+				disabled={isSubmitting}
+				class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg text-white rounded-lg transition-all font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+			>
+				<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+				</svg>
+				<span>{isSubmitting ? 'Creating...' : 'Create Session'}</span>
+			</button>
 		</div>
+
 	</form>
 </div>
-
-<!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-12 md:h-16"></div>

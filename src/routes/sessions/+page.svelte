@@ -1,8 +1,46 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import CalendarView from '$lib/components/CalendarView.svelte';
+	import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+	import { invalidateAll } from '$app/navigation';
 	
 	let { data } = $props<{ data: PageData }>();
+	
+	let showDeleteModal = $state(false);
+	let deleteSessionId = $state<number | null>(null);
+	let deleteSessionDate = $state<string>('');
+	
+	function confirmDelete(sessionId: number, sessionDate: string) {
+		deleteSessionId = sessionId;
+		deleteSessionDate = new Date(sessionDate).toLocaleDateString('en-US', { 
+			weekday: 'long', 
+			month: 'short', 
+			day: 'numeric' 
+		});
+		showDeleteModal = true;
+	}
+	
+	async function handleDelete() {
+		if (!deleteSessionId) return;
+		
+		try {
+			const res = await fetch(`/api/sessions/${deleteSessionId}`, {
+				method: 'DELETE'
+			});
+			
+			if (res.ok) {
+				await invalidateAll();
+			} else {
+				alert('Failed to delete session');
+			}
+		} catch (error) {
+			console.error('Error deleting session:', error);
+			alert('Failed to delete session');
+		} finally {
+			deleteSessionId = null;
+			deleteSessionDate = '';
+		}
+	}
 </script>
 
 <div class="w-full">
@@ -67,68 +105,85 @@
 				<div class="p-6">
 					{#if data.user}
 						<div class="space-y-4">
-							<!-- Add New Session Card Template -->
-							<a 
-								href="/sessions/new"
-								class="block bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-500 hover:shadow-lg hover:from-blue-100 hover:to-purple-100 transition-all group"
-							>
-								<div class="flex items-center justify-center gap-4">
-									<div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
-										<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-										</svg>
-									</div>
-									<div class="text-center">
-										<h3 class="text-xl font-bold text-slate-900 mb-1">Create New Session</h3>
-										<p class="text-sm text-slate-600">Click to add a new training session</p>
-									</div>
-								</div>
-							</a>
-
 							{#if data.sessions && data.sessions.length > 0}
+								<!-- Add New Session Card Template -->
+								<a 
+									href="/sessions/new"
+									class="block bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-500 hover:shadow-lg hover:from-blue-100 hover:to-purple-100 transition-all group"
+								>
+									<div class="flex items-center justify-center gap-4">
+										<div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+											<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+											</svg>
+										</div>
+										<div class="text-center">
+											<h3 class="text-xl font-bold text-slate-900 mb-1">Create New Session</h3>
+											<p class="text-sm text-slate-600">Click to add a new training session</p>
+										</div>
+									</div>
+								</a>
 								{#each data.sessions as session}
 									<div class="bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-md transition-all">
-										<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+										<div class="flex items-center gap-3 mb-2">
+											<div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">
+												{new Date(session.session_date).getDate()}
+											</div>
 											<div class="flex-1">
-												<div class="flex items-center gap-3 mb-2">
-													<div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">
-														{new Date(session.session_date).getDate()}
-													</div>
-													<div>
-														<span class="block text-lg font-bold text-slate-900">
-															{new Date(session.session_date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-														</span>
-														<div class="flex items-center gap-2 text-sm text-slate-600">
-															<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-																<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-															</svg>
-															<span>{session.start_time}</span>
-															<span>•</span>
-															<span>{session.duration} minutes</span>
-														</div>
-													</div>
-												</div>
-												{#if session.notes}
-													<p class="text-sm text-slate-600 mb-3 ml-15">{session.notes}</p>
-												{/if}
-												<div class="flex gap-2 flex-wrap ml-15">
-													<span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200">
-														{session.slot_count} slots
-													</span>
-													<span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg border border-blue-200">
-														{session.drills_assigned} drills
-													</span>
+												<span class="block text-lg font-bold text-slate-900">
+													{new Date(session.session_date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+												</span>
+												<div class="flex items-center gap-2 text-sm text-slate-600">
+													<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+													</svg>
+													<span>{session.start_time}</span>
+													<span>•</span>
+													<span>{session.duration} minutes</span>
 												</div>
 											</div>
+										</div>
+										{#if session.notes}
+											<p class="text-sm text-slate-600 mb-3">{session.notes}</p>
+										{/if}
+										<div class="flex gap-2 flex-wrap mb-4">
+											<span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200">
+												{session.slot_count} slots
+											</span>
+											<span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg border border-blue-200">
+												{session.drills_assigned} drills
+											</span>
+										</div>
+										<!-- Action Buttons -->
+										<div class="flex flex-col gap-2">
 											<a
 												href="/sessions/{session.id}"
 												class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm"
 											>
-												<span>View</span>
 												<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 												</svg>
+												<span>View</span>
 											</a>
+											<a
+												href="/sessions/{session.id}/edit"
+												class="inline-flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm"
+											>
+												<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+												</svg>
+												<span>Edit</span>
+											</a>
+											<button
+												onclick={() => confirmDelete(session.id, session.session_date)}
+												class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm cursor-pointer"
+											>
+												<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+												</svg>
+												<span>Delete</span>
+											</button>
 										</div>
 									</div>
 								{/each}
@@ -163,11 +218,21 @@
 								Sign In
 							</a>
 						</div>
-					{/if}
-				</div>
-			</div>
+			{/if}
 		</div>
+	</div>
+</div>
 
+<!-- Delete Confirmation Modal -->
+<ConfirmModal
+	bind:isOpen={showDeleteModal}
+	title="Delete Session"
+	message="Are you sure you want to delete the session on {deleteSessionDate}? This action cannot be undone."
+	confirmText="Delete"
+	cancelText="Cancel"
+	danger={true}
+	onConfirm={handleDelete}
+/>
 		<!-- Right Column: Calendar -->
 		<div class="lg:col-span-1">
 			{#if data.user}

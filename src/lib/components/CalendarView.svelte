@@ -149,33 +149,33 @@
 
 <div class="bg-white rounded-lg">
 	<!-- Calendar Header -->
-	<div class="flex items-center justify-between mb-4">
-		<h2 class="text-lg font-bold text-slate-900">
+	<div class="flex items-center justify-between mb-3">
+		<h2 class="text-base md:text-lg font-bold text-slate-900">
 			{monthNames[viewMonth]}
 			{viewYear}
 		</h2>
-		<div class="flex items-center gap-2">
+		<div class="flex items-center gap-1 md:gap-2">
 			<button
 				onclick={goToToday}
-				class="px-2 py-1 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
+				class="px-2 py-1 text-[10px] md:text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
 			>
 				Today
 			</button>
 			<button
 				onclick={previousMonth}
-				class="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
+				class="p-1 md:p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
 				aria-label="Previous month"
 			>
-				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg class="h-3 w-3 md:h-4 md:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 				</svg>
 			</button>
 			<button
 				onclick={nextMonth}
-				class="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
+				class="p-1 md:p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors"
 				aria-label="Next month"
 			>
-				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg class="h-3 w-3 md:h-4 md:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 				</svg>
 			</button>
@@ -183,16 +183,16 @@
 	</div>
 
 	<!-- Day Labels -->
-	<div class="grid grid-cols-7 gap-1 mb-1">
+	<div class="grid grid-cols-7 gap-0.5 md:gap-1 mb-1">
 		{#each ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as dayName}
-			<div class="text-center text-[10px] font-semibold text-slate-500 py-1">
+			<div class="text-center text-[9px] md:text-[10px] font-semibold text-slate-500 py-0.5 md:py-1">
 				{dayName}
 			</div>
 		{/each}
 	</div>
 
 	<!-- Calendar Grid -->
-	<div class="grid grid-cols-7 gap-1">
+	<div class="grid grid-cols-7 gap-0.5 md:gap-1">
 		{#each calendarDays() as day}
 			{#if day.day === null}
 				<!-- Empty cell -->
@@ -200,7 +200,7 @@
 			{:else}
 				<button
 					onclick={() => handleDayClick(day)}
-					class="aspect-square p-1 rounded transition-all relative group text-xs"
+					class="aspect-square p-0.5 md:p-1 rounded transition-all relative group text-[10px] md:text-xs"
 					class:bg-blue-50={day.isToday && !day.hasSessions}
 					class:ring-1={day.isToday}
 					class:ring-blue-500={day.isToday}
@@ -222,7 +222,7 @@
 						{#if day.hasSessions}
 							<div class="flex gap-0.5 mt-0.5">
 								{#each day.sessions.slice(0, 3) as _}
-									<div class="w-0.5 h-0.5 bg-green-600 rounded-full"></div>
+									<div class="w-0.5 h-0.5 md:w-1 md:h-1 bg-green-600 rounded-full"></div>
 								{/each}
 							</div>
 							<!-- Tooltip on hover -->
@@ -239,14 +239,14 @@
 	</div>
 
 	<!-- Legend -->
-	<div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-200 text-xs">
-		<div class="flex items-center gap-1.5">
-			<div class="w-3 h-3 bg-blue-50 ring-1 ring-blue-500 rounded"></div>
+	<div class="flex items-center gap-2 md:gap-3 mt-2 md:mt-3 pt-2 md:pt-3 border-t border-slate-200 text-[10px] md:text-xs">
+		<div class="flex items-center gap-1 md:gap-1.5">
+			<div class="w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-50 ring-1 ring-blue-500 rounded"></div>
 			<span class="text-slate-600">Today</span>
 		</div>
-		<div class="flex items-center gap-1.5">
-			<div class="w-3 h-3 bg-green-100 rounded"></div>
-			<span class="text-slate-600">Training Session</span>
+		<div class="flex items-center gap-1 md:gap-1.5">
+			<div class="w-2.5 h-2.5 md:w-3 md:h-3 bg-green-100 rounded"></div>
+			<span class="text-slate-600">Session</span>
 		</div>
 	</div>
 </div>

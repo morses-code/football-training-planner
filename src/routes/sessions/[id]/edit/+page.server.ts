@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const coaches = db.prepare(`
 		SELECT id, name, email, avatar 
 		FROM users 
-		WHERE email != 'system@internal.app'
+		WHERE email != 'system@example.com'
 		ORDER BY name
 	`).all();
 
