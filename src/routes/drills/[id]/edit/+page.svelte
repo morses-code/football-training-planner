@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import type { PageData } from './$types';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -66,26 +67,43 @@
 </script>
 
 <div class="w-full">
-	<div class="mb-6">
-		<h1 class="text-4xl font-bold text-slate-900 mb-2">Edit Drill</h1>
-		<p class="text-lg text-slate-600">
-			Update drill information for your library
-		</p>
-	</div>
+	<!-- Hero Header -->
+	<PageHeader 
+		title="Edit Drill"
+		subtitle="Update drill information for your library"
+		gradientFrom="green-600"
+		gradientTo="emerald-600"
+	>
+		{#snippet icon()}
+			<svg class="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+			</svg>
+		{/snippet}
+	</PageHeader>
 
 	{#if error}
-		<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-			{error}
+		<div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">
+			<svg class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<span>{error}</span>
 		</div>
 	{/if}
 
 	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Basic Information -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Basic Information</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Basic Information</h2>
+			</div>
 			
 			<div class="mb-4">
-				<label for="name" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="name" class="block text-sm font-bold text-slate-700 mb-2">
 					Drill Name
 				</label>
 				<input
@@ -93,19 +111,19 @@
 					id="name"
 					bind:value={formData.name}
 					required
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				/>
 			</div>
 
 			<div class="mb-4">
-				<label for="category" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="category" class="block text-sm font-bold text-slate-700 mb-2">
 					Category
 				</label>
 				<select
 					id="category"
 					bind:value={formData.category}
 					required
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				>
 					<option value="warmup">Warm-up</option>
 					<option value="dribbling">Dribbling</option>
@@ -118,7 +136,7 @@
 
 			<div class="grid md:grid-cols-3 gap-4 mb-4">
 				<div>
-					<label for="duration" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="duration" class="block text-sm font-bold text-slate-700 mb-2">
 						Duration (mins)
 					</label>
 					<input
@@ -128,11 +146,11 @@
 						min="1"
 						max="60"
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 				<div>
-					<label for="minPlayers" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="minPlayers" class="block text-sm font-bold text-slate-700 mb-2">
 						Min Players
 					</label>
 					<input
@@ -141,11 +159,11 @@
 						bind:value={formData.minPlayers}
 						min="1"
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 				<div>
-					<label for="maxPlayers" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="maxPlayers" class="block text-sm font-bold text-slate-700 mb-2">
 						Max Players
 					</label>
 					<input
@@ -154,13 +172,13 @@
 						bind:value={formData.maxPlayers}
 						min="1"
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 			</div>
 
 			<div class="mb-4">
-				<label for="description" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="description" class="block text-sm font-bold text-slate-700 mb-2">
 					Description
 				</label>
 				<textarea
@@ -168,17 +186,24 @@
 					bind:value={formData.description}
 					rows="4"
 					required
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				></textarea>
 			</div>
 		</div>
 
 		<!-- Additional Details -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Additional Details</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Additional Details</h2>
+			</div>
 
 			<div class="mb-4">
-				<label for="equipment" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="equipment" class="block text-sm font-bold text-slate-700 mb-2">
 					Equipment Needed
 				</label>
 				<textarea
@@ -186,12 +211,12 @@
 					bind:value={formData.equipment}
 					rows="2"
 					placeholder="e.g., 10 cones, 4 footballs, 2 goals"
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				></textarea>
 			</div>
 
 			<div class="mb-4">
-				<label for="skillFocus" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="skillFocus" class="block text-sm font-bold text-slate-700 mb-2">
 					Skills Focus
 				</label>
 				<input
@@ -199,12 +224,12 @@
 					id="skillFocus"
 					bind:value={formData.skillFocus}
 					placeholder="e.g., Ball control, Coordination, Dribbling"
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				/>
 			</div>
 
 			<div class="mb-4">
-				<label for="coachingPoints" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="coachingPoints" class="block text-sm font-bold text-slate-700 mb-2">
 					Coaching Points
 				</label>
 				<textarea
@@ -212,7 +237,7 @@
 					bind:value={formData.coachingPoints}
 					rows="4"
 					placeholder="Key points to emphasize during the drill..."
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				></textarea>
 			</div>
 		</div>
@@ -220,30 +245,33 @@
 </div>
 
 <!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-	<div class="px-3 md:px-4 py-2 md:py-3">
-		<div class="flex items-center gap-2">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t-2 border-slate-200 shadow-xl z-40">
+	<div class="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
+		<div class="flex items-center gap-3">
 			<a
 				href="/drills/{data.drill.id}"
 				onclick={(e) => { triggerGleam('cancel'); }}
-				class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+				class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all text-sm font-semibold relative overflow-hidden"
 			>
 				{#if gleamingItem === 'cancel'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 				{/if}
-				← Cancel
+				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+				</svg>
+				<span class="relative z-10">Cancel</span>
 			</a>
 			<div class="flex-1"></div>
 			<button
 				type="submit"
 				disabled={isSubmitting}
 				onclick={(e) => { if (!isSubmitting) triggerGleam('save'); handleSubmit(); }}
-				class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+				class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg text-white rounded-lg transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 			>
 				{#if gleamingItem === 'save'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 				{/if}
-				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg class="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 				</svg>
 				<span class="relative z-10">{isSubmitting ? 'Saving...' : 'Save Changes'}</span>

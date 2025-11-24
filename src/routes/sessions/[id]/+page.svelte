@@ -83,34 +83,72 @@
 	}
 </script>
 
-<div class="w-full">
-	<!-- Header -->
-	<div class="mb-4 md:mb-6">
-		<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-2">Training Session</h1>
-		<div class="flex flex-wrap items-center gap-2 md:gap-4 text-sm md:text-lg text-slate-600">
-			<span>{formattedDate}</span>
-			<span>•</span>
-			<span>{data.session.start_time}</span>
-			<span>•</span>
-			<span>{data.session.duration} minutes</span>
+<div class="w-full max-w-6xl mx-auto">
+	<!-- Hero Header with Gradient -->
+	<div class="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white">
+		<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+			<div class="flex-1">
+				<h1 class="text-3xl md:text-5xl font-bold mb-4">Training Session</h1>
+				<div class="flex flex-wrap items-center gap-3 mb-2">
+					<div class="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
+						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+						</svg>
+						<span class="text-sm font-medium">{formattedDate}</span>
+					</div>
+					<div class="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
+						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+						<span class="text-sm font-medium">{data.session.start_time}</span>
+					</div>
+					<div class="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
+						<span class="text-sm font-medium">{data.session.duration} minutes</span>
+					</div>
+				</div>
+			</div>
+			<!-- Large icon -->
+			<div class="hidden md:flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30">
+				<svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+				</svg>
+			</div>
 		</div>
 	</div>
 
 	{#if data.session.notes}
-		<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mb-4 md:mb-6">
-			<h3 class="font-semibold text-blue-900 mb-1 text-sm md:text-base">Session Notes</h3>
-			<p class="text-sm md:text-base text-blue-800">{data.session.notes}</p>
+		<div class="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-4 md:p-6 mb-6 shadow-lg">
+			<div class="flex items-start gap-3">
+				<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+					<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+				<div class="flex-1">
+					<h3 class="font-bold text-blue-900 mb-2 text-lg">Session Notes</h3>
+					<p class="text-base text-blue-800 leading-relaxed">{data.session.notes}</p>
+				</div>
+			</div>
 		</div>
 	{/if}
 
 	<!-- Session Timeline -->
-	<div class="bg-white rounded-lg shadow p-4 md:p-6 mb-4 md:mb-6">
-		<h2 class="text-lg md:text-xl font-semibold text-slate-800 mb-4">Session Plan</h2>
+	<div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+		<div class="bg-gradient-to-r from-slate-50 to-slate-100 -m-6 px-6 py-4 mb-6 border-b border-slate-200">
+			<div class="flex items-center gap-3">
+				<div class="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center">
+					<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-800">Session Plan</h2>
+			</div>
+		</div>
 
 		<div class="space-y-4 md:space-y-6">
 			<!-- Pre-Session Setup -->
-			{#if Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup')?.length > 0}
-				{@const setupCoaches = Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup') || []}
+			{#if (Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1] as any[])?.filter((c: any) => c.taskType === 'setup')?.length > 0}
+				{@const setupCoaches = (Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1] as any[])?.filter((c: any) => c.taskType === 'setup') || []}
 				<div class="relative">
 					<!-- Timeline connector -->
 					<div class="absolute left-5 md:left-6 top-10 md:top-12 bottom-0 w-0.5 bg-slate-200 -mb-4 md:-mb-6"></div>

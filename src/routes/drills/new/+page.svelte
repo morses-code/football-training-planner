@@ -62,26 +62,46 @@
 </script>
 
 <div class="w-full">
-	<div class="mb-6">
-		<h1 class="text-4xl font-bold text-slate-900 mb-2">Add New Drill</h1>
-		<p class="text-lg text-slate-600">
-			Create a training drill for your Under 6s sessions
-		</p>
+	<!-- Hero Header -->
+	<div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 mb-6 md:mb-8">
+		<div class="flex items-center gap-4 md:gap-6">
+			<div class="hidden md:block w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+				<svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+				</svg>
+			</div>
+			<div class="flex-1">
+				<h1 class="text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2">Add New Drill</h1>
+				<p class="text-base md:text-lg text-green-50">
+					Create a training drill for your Under 6s sessions
+				</p>
+			</div>
+		</div>
 	</div>
 
 	{#if error}
-		<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-			{error}
+		<div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">
+			<svg class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<span>{error}</span>
 		</div>
 	{/if}
 
 	<form id="drill-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Basic Information -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Basic Information</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Basic Information</h2>
+			</div>
 
 			<div class="mb-4">
-				<label for="name" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="name" class="block text-sm font-bold text-slate-700 mb-2">
 					Drill Name *
 				</label>
 				<input
@@ -90,12 +110,12 @@
 					bind:value={formData.name}
 					required
 					placeholder="e.g., Coach Says"
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				/>
 			</div>
 
 			<div class="mb-4">
-				<label for="description" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="description" class="block text-sm font-bold text-slate-700 mb-2">
 					Description *
 				</label>
 				<textarea
@@ -104,20 +124,20 @@
 					required
 					rows="3"
 					placeholder="Brief description of the drill and its objectives..."
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				></textarea>
 			</div>
 
 			<div class="grid md:grid-cols-2 gap-4">
 				<div>
-					<label for="category" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="category" class="block text-sm font-bold text-slate-700 mb-2">
 						Category *
 					</label>
 					<select
 						id="category"
 						bind:value={formData.category}
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					>
 						{#each categories as category}
 							<option value={category.value}>{category.label}</option>
@@ -126,7 +146,7 @@
 				</div>
 
 				<div>
-					<label for="duration" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="duration" class="block text-sm font-bold text-slate-700 mb-2">
 						Duration (minutes) *
 					</label>
 					<input
@@ -136,18 +156,25 @@
 						required
 						min="5"
 						max="30"
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 			</div>
 		</div>
 
 		<!-- Details -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Details</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Details</h2>
+			</div>
 
 			<div class="mb-4">
-				<label for="skillFocus" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="skillFocus" class="block text-sm font-bold text-slate-700 mb-2">
 					Skill Focus
 				</label>
 				<input
@@ -155,12 +182,12 @@
 					id="skillFocus"
 					bind:value={formData.skillFocus}
 					placeholder="e.g., Dribbling, Listening, Ball Control"
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				/>
 			</div>
 
 			<div class="mb-4">
-				<label for="equipment" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="equipment" class="block text-sm font-bold text-slate-700 mb-2">
 					Equipment Needed
 				</label>
 				<input
@@ -168,12 +195,12 @@
 					id="equipment"
 					bind:value={formData.equipment}
 					placeholder="e.g., Cones, Balls, Bibs"
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				/>
 			</div>
 
 			<div class="mb-4">
-				<label for="instructions" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="instructions" class="block text-sm font-bold text-slate-700 mb-2">
 					Instructions
 				</label>
 				<textarea
@@ -181,13 +208,13 @@
 					bind:value={formData.instructions}
 					rows="5"
 					placeholder="Step-by-step instructions for setting up and running the drill..."
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 				></textarea>
 			</div>
 
 			<div class="grid md:grid-cols-2 gap-4">
 				<div>
-					<label for="minPlayers" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="minPlayers" class="block text-sm font-bold text-slate-700 mb-2">
 						Minimum Players *
 					</label>
 					<input
@@ -197,12 +224,12 @@
 						required
 						min="1"
 						max="20"
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 
 				<div>
-					<label for="maxPlayers" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="maxPlayers" class="block text-sm font-bold text-slate-700 mb-2">
 						Maximum Players *
 					</label>
 					<input
@@ -212,7 +239,7 @@
 						required
 						min="1"
 						max="20"
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
 					/>
 				</div>
 			</div>
@@ -222,18 +249,21 @@
 
 <!-- Bottom Action Bar -->
 <div class="h-12 md:h-16"></div>
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-	<div class="px-3 md:px-4 py-2 md:py-3">
-		<div class="flex items-center gap-2">
+<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t-2 border-slate-200 shadow-xl z-40">
+	<div class="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
+		<div class="flex items-center gap-3">
 			<a
 				href="/drills"
 				onclick={(e) => { triggerGleam('cancel'); }}
-				class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+				class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all text-sm font-semibold relative overflow-hidden"
 			>
 				{#if gleamingItem === 'cancel'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 				{/if}
-				← Cancel
+				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+				</svg>
+				<span class="relative z-10">Cancel</span>
 			</a>
 			<div class="flex-1"></div>
 			<button
@@ -241,13 +271,13 @@
 				form="drill-form"
 				disabled={isSubmitting}
 				onclick={(e) => { if (!isSubmitting) triggerGleam('create'); }}
-				class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+				class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg text-white rounded-lg transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 			>
 				{#if gleamingItem === 'create'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 				{/if}
-				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				<svg class="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 				</svg>
 				<span class="relative z-10">{isSubmitting ? 'Creating...' : 'Create Drill'}</span>
 			</button>

@@ -184,27 +184,47 @@
 </script>
 
 <div class="w-full">
-	<div class="mb-6">
-		<h1 class="text-4xl font-bold text-slate-900 mb-2">New Training Session</h1>
-		<p class="text-lg text-slate-600">
-			Plan your Under 6s training session
-		</p>
+	<!-- Hero Header -->
+	<div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-6 md:mb-8">
+		<div class="flex items-center gap-4 md:gap-6">
+			<div class="hidden md:block w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+				<svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+				</svg>
+			</div>
+			<div class="flex-1">
+				<h1 class="text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2">New Training Session</h1>
+				<p class="text-base md:text-lg text-blue-50">
+					Plan your Under 6s training session
+				</p>
+			</div>
+		</div>
 	</div>
 
 	{#if error}
-		<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-			{error}
+		<div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">
+			<svg class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<span>{error}</span>
 		</div>
 	{/if}
 
 	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Session Details -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Session Details</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Session Details</h2>
+			</div>
 			
 			<div class="grid md:grid-cols-2 gap-4 mb-4">
 				<div>
-					<label for="date" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="date" class="block text-sm font-bold text-slate-700 mb-2">
 						Date
 					</label>
 					<input
@@ -213,12 +233,12 @@
 						bind:value={sessionData.date}
 						min={today}
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 					/>
 				</div>
 				
 				<div>
-					<label for="time" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="time" class="block text-sm font-bold text-slate-700 mb-2">
 						Start Time
 					</label>
 					<input
@@ -226,13 +246,13 @@
 						id="time"
 						bind:value={sessionData.time}
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 					/>
 				</div>
 			</div>
 
 			<div class="mb-4">
-				<label for="notes" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="notes" class="block text-sm font-bold text-slate-700 mb-2">
 					Session Notes
 				</label>
 				<textarea
@@ -240,20 +260,27 @@
 					bind:value={sessionData.notes}
 					rows="3"
 					placeholder="Any special notes or reminders for this session..."
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 				></textarea>
 			</div>
 		</div>
 
 		<!-- Pitch Setup Section -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Pre-Session Setup</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Pre-Session Setup</h2>
+			</div>
 			
 			<div class="mb-4">
-				<div class="block text-sm font-semibold text-slate-700 mb-2">
+				<div class="block text-sm font-bold text-slate-700 mb-2">
 					Setup Instructions
 				</div>
-				<div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-700">
+				<div class="bg-gradient-to-r from-slate-50 to-slate-100 border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-700">
 					{sessionData.setupNotes}
 				</div>
 			</div>
@@ -261,13 +288,13 @@
 			<!-- Setup Coaches -->
 			<div>
 				<div class="flex items-center justify-between mb-3">
-					<div class="block text-sm font-semibold text-slate-700">
+					<div class="block text-sm font-bold text-slate-700">
 						Assigned Coaches
 					</div>
 					<button
 						type="button"
 						onclick={() => assigningSetupCoach = true}
-						class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+						class="text-sm text-blue-600 hover:text-blue-700 font-bold"
 					>
 						+ Assign Coach
 					</button>
@@ -276,17 +303,17 @@
 				{#if setupCoaches.length > 0}
 					<div class="space-y-2">
 						{#each setupCoaches as coach}
-							<div class="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+							<div class="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg px-3 py-2">
 								<div class="flex items-center gap-2">
-									<span class="text-sm font-medium text-slate-900">{coach.name}</span>
-									<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+									<span class="text-sm font-bold text-slate-900">{coach.name}</span>
+									<span class="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-bold rounded">
 										{coach.role}
 									</span>
 								</div>
 								<button
 									type="button"
 									onclick={() => removeCoachFromSetup(coach.id)}
-									class="text-red-600 hover:text-red-700 text-sm"
+									class="text-red-600 hover:text-red-700 text-sm font-semibold"
 								>
 									Remove
 								</button>
@@ -300,8 +327,15 @@
 		</div>
 
 		<!-- Session Structure -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Session Structure (60 mins)</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Session Structure (60 mins)</h2>
+			</div>
 			
 			<div class="space-y-4">
 				{#each slots as slot, index}
@@ -596,31 +630,34 @@
 		{/if}
 
 		<!-- Actions -->
-		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-			<div class="px-3 md:px-4 py-2 md:py-3">
-				<div class="flex items-center gap-2">
+		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t-2 border-slate-200 shadow-xl z-40">
+			<div class="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
+				<div class="flex items-center gap-3">
 					<a
 						href="/sessions"
 						onclick={(e) => { triggerGleam('cancel'); }}
-						class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+						class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all text-sm font-semibold relative overflow-hidden"
 					>
 						{#if gleamingItem === 'cancel'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 						{/if}
-						← Cancel
+						<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+						</svg>
+						<span class="relative z-10">Cancel</span>
 					</a>
 					<div class="flex-1"></div>
 					<button
 						type="submit"
 						disabled={isSubmitting}
 						onclick={(e) => { if (!isSubmitting) triggerGleam('create'); }}
-						class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+						class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg text-white rounded-lg transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 					>
 						{#if gleamingItem === 'create'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 						{/if}
-						<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+						<svg class="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 						<span class="relative z-10">{isSubmitting ? 'Creating...' : 'Create Session'}</span>
 					</button>

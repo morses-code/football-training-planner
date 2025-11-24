@@ -2,6 +2,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import type { PageData } from './$types';
 	import type { Coach, Drill, Slot } from '$lib/types/sessions';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -170,27 +171,44 @@
 </script>
 
 <div class="w-full">
-	<div class="mb-6">
-		<h1 class="text-4xl font-bold text-slate-900 mb-2">Edit Training Session</h1>
-		<p class="text-lg text-slate-600">
-			Update your Under 6s training session
-		</p>
-	</div>
+	<!-- Hero Header -->
+	<PageHeader 
+		title="Edit Training Session"
+		subtitle="Update your Under 6s training session"
+		gradientFrom="blue-600"
+		gradientTo="purple-600"
+	>
+		{#snippet icon()}
+			<svg class="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+			</svg>
+		{/snippet}
+	</PageHeader>
 
 	{#if error}
-		<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-			{error}
+		<div class="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+			<svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<span>{error}</span>
 		</div>
 	{/if}
 
 	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Session Details -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Session Details</h2>
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Session Details</h2>
+			</div>
 			
 			<div class="grid md:grid-cols-2 gap-4 mb-4">
 				<div>
-					<label for="date" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="date" class="block text-sm font-bold text-slate-700 mb-2">
 						Date
 					</label>
 					<input
@@ -198,12 +216,12 @@
 						id="date"
 						bind:value={sessionData.date}
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 					/>
 				</div>
 				
 				<div>
-					<label for="time" class="block text-sm font-semibold text-slate-700 mb-2">
+					<label for="time" class="block text-sm font-bold text-slate-700 mb-2">
 						Start Time
 					</label>
 					<input
@@ -211,13 +229,13 @@
 						id="time"
 						bind:value={sessionData.time}
 						required
-						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+						class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 					/>
 				</div>
 			</div>
 
 			<div class="mb-4">
-				<label for="notes" class="block text-sm font-semibold text-slate-700 mb-2">
+				<label for="notes" class="block text-sm font-bold text-slate-700 mb-2">
 					Session Notes
 				</label>
 				<textarea
@@ -225,14 +243,21 @@
 					bind:value={sessionData.notes}
 					rows="3"
 					placeholder="Any special notes or reminders for this session..."
-					class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+					class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 				></textarea>
 			</div>
 		</div>
 
-		<!-- Session Structure (reuse same structure from new session page) -->
-		<div class="bg-white rounded-lg shadow p-6 mb-6">
-			<h2 class="text-xl font-semibold text-slate-800 mb-4">Session Structure (60 mins)</h2>
+		<!-- Session Structure -->
+		<div class="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 mb-6">
+			<div class="flex items-center gap-3 mb-6">
+				<div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+					<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+					</svg>
+				</div>
+				<h2 class="text-xl font-bold text-slate-900">Session Structure</h2>
+			</div>
 			
 			<div class="space-y-4">
 				{#each slots as slot, index}
@@ -459,30 +484,33 @@
 		{/if}
 
 		<!-- Actions -->
-		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-			<div class="px-3 md:px-4 py-2 md:py-3">
-				<div class="flex items-center gap-2">
+		<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white border-t-2 border-slate-200 shadow-xl z-40">
+			<div class="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
+				<div class="flex items-center gap-3">
 					<a
 						href="/sessions/{data.session.id}"
 						onclick={(e) => { triggerGleam('cancel'); }}
-						class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium relative overflow-hidden"
+						class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all text-sm font-semibold relative overflow-hidden"
 					>
 						{#if gleamingItem === 'cancel'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 						{/if}
-						← Cancel
+						<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+						</svg>
+						<span class="relative z-10">Cancel</span>
 					</a>
 					<div class="flex-1"></div>
 					<button
 						type="submit"
 						disabled={isSubmitting}
 						onclick={(e) => { if (!isSubmitting) triggerGleam('save'); }}
-						class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+						class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg text-white rounded-lg transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
 					>
 						{#if gleamingItem === 'save'}
-							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
+							<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-gleam"></div>
 						{/if}
-						<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 						<span class="relative z-10">{isSubmitting ? 'Saving...' : 'Save Changes'}</span>

@@ -34,18 +34,28 @@
 	}
 </script>
 
-<div class="w-full">
-	<div class="mb-4 md:mb-6">
-		<h1 class="text-2xl md:text-4xl font-bold text-slate-900 mb-2">Drill Library</h1>
-		<p class="text-base md:text-lg text-slate-600">
-			Browse and manage training drills for Under 6s
-		</p>
+<div class="w-full max-w-7xl mx-auto">
+	<!-- Hero Header with Gradient -->
+	<div class="mb-6 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 text-white">
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-3xl md:text-5xl font-bold mb-2">Drill Library</h1>
+				<p class="text-lg md:text-xl text-green-100">
+					Browse and manage training drills for Under 6s
+				</p>
+			</div>
+			<div class="hidden md:flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30">
+				<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+				</svg>
+			</div>
+		</div>
 	</div>
 
 	<!-- Filter Tabs -->
-	<div class="bg-white rounded-lg shadow mb-4 md:mb-6">
-		<div class="border-b border-slate-200">
-			<nav class="flex gap-4 md:gap-8 px-4 md:px-6 overflow-x-auto" aria-label="Drill categories">
+	<div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+		<div class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+			<nav class="flex gap-4 md:gap-8 px-6 overflow-x-auto" aria-label="Drill categories">
 				<button 
 					onclick={() => selectedCategory = 'all'}
 					class="py-3 md:py-4 border-b-2 font-medium text-sm md:text-base whitespace-nowrap"
@@ -105,48 +115,87 @@
 		{#if data.drills && data.drills.length > 0}
 			{#each filteredDrills() as drill}
 				{@const badge = getCategoryBadge(drill.category)}
-				<a
+				<a 
 					href="/drills/{drill.id}"
-					class="flex flex-col bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-lg transition-shadow"
+					class="group relative flex flex-col bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 hover:shadow-xl hover:border-green-400 hover:-translate-y-1 transition-all duration-200"
 				>
-					<div class="flex items-start justify-between mb-3">
-						<h3 class="text-base md:text-lg font-semibold text-slate-900">{drill.name}</h3>
-						<span class="px-2 py-1 {badge.color} text-xs font-medium rounded whitespace-nowrap ml-2">
-							{badge.label}
-						</span>
+					<!-- Category badge ribbon -->
+					<div class="absolute top-4 right-4 px-3 py-1 {badge.color} text-xs font-bold rounded-lg shadow-sm">
+						{badge.label}
 					</div>
-					<p class="text-sm md:text-base text-slate-600 mb-3 md:mb-4 line-clamp-3 flex-grow">
+					
+					<h3 class="text-lg font-bold text-slate-900 mb-3 pr-20 group-hover:text-green-600 transition-colors">{drill.name}</h3>
+					<p class="text-sm text-slate-600 mb-4 line-clamp-3 flex-grow leading-relaxed">
 						{drill.description}
 					</p>
-					<div class="flex items-center justify-between text-xs md:text-sm text-slate-500">
-						<span>⏱️ {drill.duration} mins</span>
-						<span>👥 {drill.min_players}-{drill.max_players}</span>
+					
+					<!-- Stats row -->
+					<div class="flex items-center gap-4 mb-4">
+						<div class="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg">
+							<svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							<span class="text-xs font-semibold text-blue-900">{drill.duration} mins</span>
+						</div>
+						<div class="flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg">
+							<svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+							</svg>
+							<span class="text-xs font-semibold text-purple-900">{drill.min_players}-{drill.max_players}</span>
+						</div>
 					</div>
+					
 					{#if drill.skill_focus}
-						<div class="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-slate-200">
-							<span class="text-xs text-slate-500">Skills: {drill.skill_focus}</span>
+						<div class="pt-4 border-t border-slate-200">
+							<div class="flex items-start gap-2">
+								<svg class="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+								</svg>
+								<span class="text-xs text-slate-600 leading-relaxed"><strong>Skills:</strong> {drill.skill_focus}</span>
+							</div>
 						</div>
 					{/if}
+					
+					<!-- Hover arrow -->
+					<div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+						<div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+							<svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+							</svg>
+						</div>
+					</div>
 				</a>
 			{/each}
 		{:else if !data.user}
-			<div class="col-span-full text-center py-12 bg-slate-50 rounded-lg">
-				<svg class="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-				</svg>
-				<p class="text-slate-600 mb-4">Sign in to access the drill library</p>
-				<a href="/login" class="text-blue-600 hover:text-blue-700 font-medium">
-					Sign In →
+			<div class="col-span-full text-center py-16 bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-sm border-2 border-slate-200">
+				<div class="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+					<svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+					</svg>
+				</div>
+				<p class="text-lg font-semibold text-slate-900 mb-2">Sign in to access the drill library</p>
+				<p class="text-sm text-slate-600 mb-6">View and manage all your training drills</p>
+				<a href="/login" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold">
+					Sign In
+					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+					</svg>
 				</a>
 			</div>
 		{:else}
-			<div class="col-span-full text-center py-12 bg-slate-50 rounded-lg">
-				<svg class="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-				</svg>
-				<p class="text-slate-600 mb-4">No drills in your library yet</p>
-				<a href="/drills/new" class="text-blue-600 hover:text-blue-700 font-medium">
-					Add Your First Drill →
+			<div class="col-span-full text-center py-16 bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-sm border-2 border-slate-200">
+				<div class="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+					<svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+					</svg>
+				</div>
+				<p class="text-lg font-semibold text-slate-900 mb-2">No drills in your library yet</p>
+				<p class="text-sm text-slate-600 mb-6">Create your first drill to get started</p>
+				<a href="/drills/new" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold">
+					Add Your First Drill
+					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
 				</a>
 			</div>
 		{/if}

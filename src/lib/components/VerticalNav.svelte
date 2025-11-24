@@ -50,7 +50,7 @@
 	import NavProfile from './NavProfile.svelte';
 	import { user } from '$lib/stores/user';
 
-	type NavItem = {
+	type NavItemType = {
 		label: string;
 		href: string;
 		icon: string;
@@ -63,7 +63,7 @@
 	let gleamingItem = $state<number | null>(null);
 	let navElement: HTMLElement | undefined = $state();
 
-	const navItems: NavItem[] = [
+	const navItems: NavItemType[] = [
 		{
 			label: 'Home',
 			href: '/',
