@@ -3,14 +3,6 @@
 	import CalendarView from '$lib/components/CalendarView.svelte';
 	
 	let { data } = $props<{ data: PageData }>();
-	let gleamingItem = $state<string | null>(null);
-
-	function triggerGleam(item: string) {
-		gleamingItem = item;
-		setTimeout(() => {
-			gleamingItem = null;
-		}, 600);
-	}
 </script>
 
 <div class="w-full">
@@ -75,6 +67,24 @@
 				<div class="p-6">
 					{#if data.user}
 						<div class="space-y-4">
+							<!-- Add New Session Card Template -->
+							<a 
+								href="/sessions/new"
+								class="block bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-500 hover:shadow-lg hover:from-blue-100 hover:to-purple-100 transition-all group"
+							>
+								<div class="flex items-center justify-center gap-4">
+									<div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+										<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+										</svg>
+									</div>
+									<div class="text-center">
+										<h3 class="text-xl font-bold text-slate-900 mb-1">Create New Session</h3>
+										<p class="text-sm text-slate-600">Click to add a new training session</p>
+									</div>
+								</div>
+							</a>
+
 							{#if data.sessions && data.sessions.length > 0}
 								{#each data.sessions as session}
 									<div class="bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-md transition-all">
@@ -182,27 +192,3 @@
 		</div>
 	</div>
 </div>
-
-<!-- Sticky Action Bar -->
-<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-	<div class="px-3 md:px-4 py-2 md:py-3">
-		<div class="flex items-center justify-end">
-			<a
-				href="/sessions/new"
-				onclick={(e) => { triggerGleam('new'); }}
-				class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm relative overflow-hidden"
-			>
-				{#if gleamingItem === 'new'}
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
-				{/if}
-				<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-				</svg>
-				<span class="relative z-10">New Session</span>
-			</a>
-		</div>
-	</div>
-</div>
-
-<!-- Spacer to prevent content from being hidden behind sticky bar -->
-<div class="h-12 md:h-16"></div>

@@ -4,14 +4,6 @@
 	let { data } = $props<{ data: PageData }>();
 	
 	let selectedCategory = $state<string>('all');
-	let gleamingItem = $state<string | null>(null);
-
-	function triggerGleam(item: string) {
-		gleamingItem = item;
-		setTimeout(() => {
-			gleamingItem = null;
-		}, 600);
-	}
 	
 	// Filter drills by category
 	const filteredDrills = $derived(() => {
@@ -112,6 +104,22 @@
 
 	<!-- Drills Grid -->
 	<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+		{#if data.user}
+			<!-- Add New Drill Card Template -->
+			<a 
+				href="/drills/new"
+				class="group relative flex flex-col bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-dashed border-green-300 rounded-xl p-6 hover:border-green-500 hover:shadow-xl hover:from-green-100 hover:to-emerald-100 transition-all items-center justify-center min-h-[250px]"
+			>
+				<div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform mb-4">
+					<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
+				</div>
+				<h3 class="text-lg font-bold text-slate-900 mb-1 text-center">Create New Drill</h3>
+				<p class="text-sm text-slate-600 text-center">Click to add a new training drill</p>
+			</a>
+		{/if}
+
 		{#if data.drills && data.drills.length > 0}
 			{#each filteredDrills() as drill}
 				{@const badge = getCategoryBadge(drill.category)}
@@ -201,29 +209,3 @@
 		{/if}
 	</div>
 </div>
-
-<!-- Sticky Action Bar -->
-{#if data.user}
-	<div class="fixed bottom-0 left-12 md:left-16 right-0 bg-white shadow-lg z-40">
-		<div class="px-3 md:px-4 py-2 md:py-3">
-			<div class="flex items-center justify-end">
-				<a
-					href="/drills/new"
-					onclick={(e) => { triggerGleam('new'); }}
-					class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm relative overflow-hidden"
-				>
-					{#if gleamingItem === 'new'}
-						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gleam"></div>
-					{/if}
-					<svg class="h-4 w-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-					</svg>
-					<span class="relative z-10">Add Drill</span>
-				</a>
-			</div>
-		</div>
-	</div>
-
-	<!-- Spacer to prevent content from being hidden behind sticky bar -->
-	<div class="h-12 md:h-16"></div>
-{/if}

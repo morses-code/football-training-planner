@@ -1,6 +1,20 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
+	interface Props {
+		title: string;
+		subtitle?: string;
+		icon: Snippet;
+		gradientFrom?: string;
+		gradientTo?: string;
+		titleSize?: string;
+		subtitleSize?: string;
+		titleMargin?: string;
+		stats?: Snippet;
+		actions?: Snippet;
+		children?: Snippet;
+	}
+
 	let {
 		title,
 		subtitle,
@@ -11,19 +25,9 @@
 		subtitleSize = 'text-lg md:text-xl',
 		titleMargin = 'mb-2',
 		stats,
+		actions,
 		children
-	} = $props<{
-		title: string;
-		subtitle?: string;
-		icon: Snippet;
-		gradientFrom?: string;
-		gradientTo?: string;
-		titleSize?: string;
-		subtitleSize?: string;
-		titleMargin?: string;
-		stats?: Snippet;
-		children?: Snippet;
-	}>();
+	}: Props = $props();
 </script>
 
 <div class="bg-gradient-to-r from-{gradientFrom} to-{gradientTo} rounded-2xl shadow-xl p-6 md:p-8 mb-6 md:mb-8">
@@ -38,6 +42,13 @@
 			{/if}
 		</div>
 
+		<!-- Actions (optional) -->
+		{#if actions}
+			<div class="hidden md:flex items-center gap-2">
+				{@render actions()}
+			</div>
+		{/if}
+
 		<!-- Icon Badge - On the right side -->
 		<div class="hidden md:flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30 flex-shrink-0">
 			{@render icon()}
@@ -50,6 +61,13 @@
 			</div>
 		{/if}
 	</div>
+
+	<!-- Mobile actions (if provided) -->
+	{#if actions}
+		<div class="md:hidden mt-4 flex gap-2">
+			{@render actions()}
+		</div>
+	{/if}
 
 	<!-- Optional additional content below -->
 	{#if children}
