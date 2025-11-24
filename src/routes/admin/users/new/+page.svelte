@@ -129,15 +129,16 @@
 				</div>
 
 					<!-- Avatar Selection -->
-					<div>
-						<label class="block text-sm font-semibold text-slate-700 mb-2">
+					<fieldset>
+						<legend class="block text-sm font-semibold text-slate-700 mb-2">
 							Choose Avatar Icon
-						</label>
+						</legend>
 						<div class="grid grid-cols-4 gap-2">
 							{#each avatars as avatar}
 								<button
 									type="button"
 									onclick={() => formData.avatar = avatar.name}
+									aria-label={`Select ${avatar.name} avatar`}
 									class="aspect-square p-3 flex items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
 									class:border-purple-500={formData.avatar === avatar.name}
 									class:bg-purple-50={formData.avatar === avatar.name}
@@ -150,7 +151,7 @@
 								</button>
 							{/each}
 						</div>
-					</div>
+					</fieldset>
 
 					<!-- Require Password Change -->
 					<div class="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
