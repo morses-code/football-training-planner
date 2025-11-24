@@ -1,4 +1,15 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
+	// Redirect to login - registration is disabled
+	goto('/login', { replaceState: true });
+</script>
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+	<div class="text-center">
+		<p class="text-slate-600">Registration is disabled. Redirecting to login...</p>
+	</div>
+</div>
 	import { goto, invalidateAll } from '$app/navigation';
 	import NavIcon from '$lib/components/NavIcon.svelte';
 

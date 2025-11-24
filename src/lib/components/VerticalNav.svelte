@@ -55,6 +55,7 @@
 		href: string;
 		icon: string;
 		requireAuth?: boolean;
+		adminOnly?: boolean;
 	};
 
 	let { assignmentCount = 0 } = $props<{ assignmentCount?: number }>();
@@ -84,6 +85,13 @@
 			href: '/assignments',
 			icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
 			requireAuth: true
+		},
+		{
+			label: 'Admin',
+			href: '/admin/users',
+			icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
+			requireAuth: true,
+			adminOnly: true
 		},
 		{
 			label: 'About',
@@ -142,7 +150,7 @@
 		<ul class="flex-1 space-y-1 p-2">
 			{#if $user}
 				{#each navItems as item, index}
-					{#if !item.requireAuth || $user}
+					{#if (!item.requireAuth || $user) && (!item.adminOnly || $user.email === 'system@example.com')}
 						<NavItem
 							href={item.href}
 							label={item.label}
