@@ -38,7 +38,9 @@
 import Database from 'better-sqlite3';
 import { join } from 'path';
 
-const db = new Database(join(process.cwd(), 'app.db'));
+// Use environment variable for database path, fallback to local path
+const dbPath = process.env.DATABASE_PATH || join(process.cwd(), 'app.db');
+const db = new Database(dbPath);
 
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
