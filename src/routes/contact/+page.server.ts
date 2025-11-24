@@ -1,22 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import db from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
 
-	const coaches = db
-		.prepare(
-			`SELECT id, name, email, avatar, created_at 
-			 FROM users 
-			 WHERE email != 'system@example.com'
-			 ORDER BY name ASC`
-		)
-		.all() as any[];
-
 	return {
-		coaches
+		user: locals.user
 	};
 };

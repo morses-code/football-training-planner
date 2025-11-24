@@ -140,24 +140,26 @@
 
 		<!-- Navigation Items -->
 		<ul class="flex-1 space-y-1 p-2">
-			{#each navItems as item, index}
-				{#if !item.requireAuth || $user}
-					<NavItem
-						href={item.href}
-						label={item.label}
-						icon={item.icon}
-						{isExpanded}
-						isGleaming={gleamingItem === index}
-						badge={item.href === '/assignments' && assignmentCount > 0 ? assignmentCount : undefined}
-						onGleam={() => triggerGleam(index)}
-						onNavigate={() => {
-							if (isExpanded) {
-								isExpanded = false;
-							}
-						}}
-					/>
-				{/if}
-			{/each}
+			{#if $user}
+				{#each navItems as item, index}
+					{#if !item.requireAuth || $user}
+						<NavItem
+							href={item.href}
+							label={item.label}
+							icon={item.icon}
+							{isExpanded}
+							isGleaming={gleamingItem === index}
+							badge={item.href === '/assignments' && assignmentCount > 0 ? assignmentCount : undefined}
+							onGleam={() => triggerGleam(index)}
+							onNavigate={() => {
+								if (isExpanded) {
+									isExpanded = false;
+								}
+							}}
+						/>
+					{/if}
+				{/each}
+			{/if}
 		</ul>
 
 		<!-- Footer -->
