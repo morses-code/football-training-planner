@@ -3,8 +3,8 @@
 	
 	let { data } = $props<{ data: PageData }>();
 	
-	function formatDate(timestamp: number) {
-		const date = new Date(timestamp * 1000);
+	function formatDate(dateString: string) {
+		const date = new Date(dateString);
 		return date.toLocaleDateString('en-GB', { 
 			weekday: 'short', 
 			day: 'numeric', 
