@@ -36,14 +36,22 @@
 			handleCancel();
 		}
 	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			handleCancel();
+		}
+	}
 </script>
 
 {#if isOpen}
 	<div 
 		class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
 		onclick={handleBackdropClick}
+		onkeydown={handleKeyDown}
 		role="dialog"
 		aria-modal="true"
+		tabindex="-1"
 	>
 		<div class="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp">
 			<!-- Header -->
