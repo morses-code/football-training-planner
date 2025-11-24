@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class="w-full max-w-6xl mx-auto">
+<div class="w-full">
 	<!-- Hero Header with Gradient -->
 	<div class="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white">
 		<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

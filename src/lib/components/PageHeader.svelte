@@ -7,6 +7,9 @@
 		icon,
 		gradientFrom = 'blue-600',
 		gradientTo = 'purple-600',
+		titleSize = 'text-3xl md:text-5xl',
+		subtitleSize = 'text-lg md:text-xl',
+		titleMargin = 'mb-2',
 		stats,
 		children
 	} = $props<{
@@ -15,6 +18,9 @@
 		icon: Snippet;
 		gradientFrom?: string;
 		gradientTo?: string;
+		titleSize?: string;
+		subtitleSize?: string;
+		titleMargin?: string;
 		stats?: Snippet;
 		children?: Snippet;
 	}>();
@@ -24,9 +30,9 @@
 	<div class="flex items-center gap-4 md:gap-6">
 		<!-- Content -->
 		<div class="flex-1 min-w-0">
-			<h1 class="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4">{title}</h1>
+			<h1 class="{titleSize} font-bold text-white {titleMargin}">{title}</h1>
 			{#if subtitle}
-				<p class="text-base md:text-lg text-white/90">
+				<p class="{subtitleSize} text-white/90">
 					{subtitle}
 				</p>
 			{/if}

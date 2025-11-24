@@ -7,7 +7,7 @@
 <div class="w-full">
 	<!-- Hero Header -->
 	<div class="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 rounded-2xl shadow-xl p-6 md:p-10 mb-6 md:mb-8">
-		<div class="max-w-3xl">
+		<div>
 			<h1 class="text-3xl md:text-5xl font-bold text-white mb-3 md:mb-4">
 				Welcome{#if data.user}, {data.user.name}{/if}
 			</h1>

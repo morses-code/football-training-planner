@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let formData = $state({
 		name: '',
@@ -63,21 +64,18 @@
 
 <div class="w-full">
 	<!-- Hero Header -->
-	<div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 mb-6 md:mb-8">
-		<div class="flex items-center gap-4 md:gap-6">
-			<div class="hidden md:block w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-				<svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-				</svg>
-			</div>
-			<div class="flex-1">
-				<h1 class="text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2">Add New Drill</h1>
-				<p class="text-base md:text-lg text-green-50">
-					Create a training drill for your Under 6s sessions
-				</p>
-			</div>
-		</div>
-	</div>
+	<PageHeader 
+		title="Add New Drill"
+		subtitle="Create a training drill for your Under 6s sessions"
+		gradientFrom="green-600"
+		gradientTo="emerald-600"
+	>
+		{#snippet icon()}
+			<svg class="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+			</svg>
+		{/snippet}
+	</PageHeader>
 
 	{#if error}
 		<div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">

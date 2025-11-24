@@ -2,6 +2,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import type { PageData } from './$types';
 	import type { Coach, Drill, Slot } from '$lib/types/sessions';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -185,21 +186,18 @@
 
 <div class="w-full">
 	<!-- Hero Header -->
-	<div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-6 md:mb-8">
-		<div class="flex items-center gap-4 md:gap-6">
-			<div class="hidden md:block w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-				<svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-				</svg>
-			</div>
-			<div class="flex-1">
-				<h1 class="text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2">New Training Session</h1>
-				<p class="text-base md:text-lg text-blue-50">
-					Plan your Under 6s training session
-				</p>
-			</div>
-		</div>
-	</div>
+	<PageHeader 
+		title="New Training Session"
+		subtitle="Plan your Under 6s training session"
+		gradientFrom="blue-600"
+		gradientTo="purple-600"
+	>
+		{#snippet icon()}
+			<svg class="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+			</svg>
+		{/snippet}
+	</PageHeader>
 
 	{#if error}
 		<div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">
