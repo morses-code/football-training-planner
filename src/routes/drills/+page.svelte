@@ -147,23 +147,23 @@
 
 	<!-- Drills Grid -->
 	<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-		{#if data.user}
-			<!-- Add New Drill Card Template -->
-			<a 
-				href="/drills/new"
-				class="group relative flex flex-col bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-dashed border-green-300 rounded-xl p-6 hover:border-green-500 hover:shadow-xl hover:from-green-100 hover:to-emerald-100 transition-all items-center justify-center min-h-[250px]"
-			>
-				<div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform mb-4">
-					<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-					</svg>
-				</div>
-				<h3 class="text-lg font-bold text-slate-900 mb-1 text-center">Create New Drill</h3>
-				<p class="text-sm text-slate-600 text-center">Click to add a new training drill</p>
-			</a>
-		{/if}
-
 		{#if data.drills && data.drills.length > 0}
+			{#if data.user}
+				<!-- Add New Drill Card Template -->
+				<a 
+					href="/drills/new"
+					class="group relative flex flex-col bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-dashed border-green-300 rounded-xl p-6 hover:border-green-500 hover:shadow-xl hover:from-green-100 hover:to-emerald-100 transition-all items-center justify-center min-h-[250px]"
+				>
+					<div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform mb-4">
+						<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+						</svg>
+					</div>
+					<h3 class="text-lg font-bold text-slate-900 mb-1 text-center">Create New Drill</h3>
+					<p class="text-sm text-slate-600 text-center">Click to add a new training drill</p>
+				</a>
+			{/if}
+
 			{#each filteredDrills() as drill}
 				{@const badge = getCategoryBadge(drill.category)}
 				<div class="group relative flex flex-col bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-md border-2 border-slate-200 p-6 hover:shadow-xl hover:border-green-400 transition-all duration-200">
