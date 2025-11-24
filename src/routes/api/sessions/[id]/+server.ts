@@ -45,6 +45,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			return json({ error: 'Session not found' }, { status: 404 });
 		}
 
+		// Check if another session already exists on this date (excluding current session)
+		const existingSession = db.prepare(`
+			SELECT id FROM training_sessions 
+			WHERE session_date = ? AND id != ?
+		`).get(sessionDate, sessionId);
+
+		if (existingSession) {
+			return json({ error: 'A session already exists on this date. Only one session per day is allowed.' }, { status: 400 });
+		}
+
 		// Start transaction
 		db.prepare('BEGIN TRANSACTION').run();
 

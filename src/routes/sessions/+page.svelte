@@ -92,12 +92,12 @@
 			<!-- Quick Stats -->
 			<div class="grid grid-cols-3 gap-3 md:gap-6">
 				<div class="bg-white rounded-lg shadow p-3 md:p-6">
-					<h3 class="text-xs md:text-sm font-semibold text-slate-600 mb-1 md:mb-2">Total Sessions</h3>
+					<h3 class="text-xs md:text-sm font-semibold text-slate-600 mb-1 md:mb-2">Upcoming Sessions</h3>
 					<p class="text-xl md:text-3xl font-bold text-slate-900">{data.sessions?.length || 0}</p>
 				</div>
 				<div class="bg-white rounded-lg shadow p-3 md:p-6">
-					<h3 class="text-xs md:text-sm font-semibold text-slate-600 mb-1 md:mb-2">Active Coaches</h3>
-					<p class="text-xl md:text-3xl font-bold text-slate-900">1</p>
+					<h3 class="text-xs md:text-sm font-semibold text-slate-600 mb-1 md:mb-2">Past Sessions</h3>
+					<p class="text-xl md:text-3xl font-bold text-slate-900">{data.pastSessionsCount || 0}</p>
 				</div>
 				<div class="bg-white rounded-lg shadow p-3 md:p-6">
 					<h3 class="text-xs md:text-sm font-semibold text-slate-600 mb-1 md:mb-2">Drill Library</h3>
@@ -108,11 +108,11 @@
 
 		<!-- Right Column: Calendar -->
 		<div class="lg:col-span-1">
-			{#if data.user && data.sessions && data.sessions.length > 0}
+			{#if data.user}
 				<div class="bg-white rounded-lg shadow lg:sticky lg:top-6">
 					<div class="p-4 md:p-6">
 						<CalendarView 
-							sessions={data.sessions}
+							sessions={data.sessions || []}
 						/>
 					</div>
 				</div>

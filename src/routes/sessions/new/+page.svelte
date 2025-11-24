@@ -5,6 +5,9 @@
 
 	let { data } = $props<{ data: PageData }>();
 
+	// Get today's date in YYYY-MM-DD format for min date
+	const today = new Date().toISOString().split('T')[0];
+
 	let sessionData = $state({
 		date: '',
 		time: '17:30',
@@ -208,6 +211,7 @@
 						type="date"
 						id="date"
 						bind:value={sessionData.date}
+						min={today}
 						required
 						class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
 					/>

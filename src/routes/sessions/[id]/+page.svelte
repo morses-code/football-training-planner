@@ -108,6 +108,58 @@
 		<h2 class="text-lg md:text-xl font-semibold text-slate-800 mb-4">Session Plan</h2>
 
 		<div class="space-y-4 md:space-y-6">
+			<!-- Pre-Session Setup -->
+			{@const setupCoaches = Object.entries(data.slotCoaches).find(([slotId]) => slotId === 'null' || slotId === 'session')?.[1]?.filter((c: any) => c.taskType === 'setup') || []}
+			{#if setupCoaches.length > 0}
+				<div class="relative">
+					<!-- Timeline connector -->
+					<div class="absolute left-5 md:left-6 top-10 md:top-12 bottom-0 w-0.5 bg-slate-200 -mb-4 md:-mb-6"></div>
+
+					<div class="flex gap-3 md:gap-4">
+						<!-- Timeline dot -->
+						<div class="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg relative z-10 text-sm md:text-base">
+							<svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+							</svg>
+						</div>
+
+						<!-- Content -->
+						<div class="flex-1 bg-orange-50 rounded-lg p-3 md:p-4 border border-orange-200">
+							<div class="flex flex-wrap items-center gap-2 md:gap-3 mb-3">
+								<h3 class="text-base md:text-lg font-semibold text-orange-900">
+									Pre-Session Setup
+								</h3>
+								<span class="px-2 py-1 text-xs font-medium rounded bg-orange-600 text-white whitespace-nowrap">
+									Setup Task
+								</span>
+							</div>
+
+							<div class="bg-white rounded-lg p-2 md:p-3 mb-3 border border-orange-200">
+								<div class="text-xs md:text-sm font-semibold text-slate-700 mb-2">Setup Instructions:</div>
+								<div class="text-xs md:text-sm text-slate-600 whitespace-pre-line">Set up 3 pitches (20x28 yards each) with small goals and cones</div>
+							</div>
+
+							<div class="bg-white rounded-lg p-2 md:p-3 border border-orange-200">
+								<div class="text-xs md:text-sm font-semibold text-slate-700 mb-2">Assigned Coaches:</div>
+								<div class="flex flex-wrap gap-2">
+									{#each setupCoaches as coach}
+										<div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
+											<div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-xs md:text-sm shadow-sm flex-shrink-0">
+												{coach.name.charAt(0)}
+											</div>
+											<div class="flex flex-col min-w-0">
+												<span class="text-xs md:text-sm font-medium text-slate-900 truncate">{coach.name}</span>
+												<span class="text-xs text-slate-500 capitalize">{coach.role}</span>
+											</div>
+										</div>
+									{/each}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{/if}
+
 			{#each data.slots as slot, index}
 				{@const slotBadge = getSlotTypeBadge(slot.slot_type)}
 				{@const coaches = data.slotCoaches[slot.id] || []}

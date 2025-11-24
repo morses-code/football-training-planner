@@ -17,6 +17,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Missing required fields' }, { status: 400 });
 		}
 
+		// Check if a session already exists on this date
+		const existingSession = db.prepare(`
+			SELECT id FROM training_sessions WHERE session_date = ?
+		`).get(sessionDate);
+
+		if (existingSession) {
+			return json({ error: 'A session already exists on this date. Only one session per day is allowed.' }, { status: 400 });
+		}
+
 		// Start transaction
 		db.prepare('BEGIN TRANSACTION').run();
 
