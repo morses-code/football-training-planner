@@ -135,23 +135,29 @@ db.exec(`
 try {
 	const adminExists = db.prepare('SELECT id FROM users WHERE email = ?').get('system@example.com');
 	if (!adminExists) {
-		// Hash password inline
-		const hashPassword = (password: string) => {
-			const encoder = new TextEncoder();
-			const data = encoder.encode(password);
-			const hashBuffer = sha256(data);
-			return encodeHexLowerCase(hashBuffer);
-		};
-		
-		const adminId = crypto.randomUUID();
-		const passwordHash = hashPassword('Admin123!');
-		
-		db.prepare(`
-			INSERT INTO users (id, email, name, password_hash, avatar, created_at, must_change_password)
-			VALUES (?, ?, ?, ?, ?, ?, ?)
-		`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000), 0);
-		
-		console.log('✅ Created admin user: system@example.com / Admin123!');
+		// Get admin password from environment variable
+		const adminPassword = process.env.ADMIN_PASSWORD;
+		if (!adminPassword) {
+			console.error('⚠️ ADMIN_PASSWORD environment variable not set - skipping admin user creation');
+		} else {
+			// Hash password inline
+			const hashPassword = (password: string) => {
+				const encoder = new TextEncoder();
+				const data = encoder.encode(password);
+				const hashBuffer = sha256(data);
+				return encodeHexLowerCase(hashBuffer);
+			};
+			
+			const adminId = crypto.randomUUID();
+			const passwordHash = hashPassword(adminPassword);
+			
+			db.prepare(`
+				INSERT INTO users (id, email, name, password_hash, avatar, created_at, must_change_password)
+				VALUES (?, ?, ?, ?, ?, ?, ?)
+			`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000), 0);
+			
+			console.log('✅ Created admin user: system@example.com');
+		}
 	}
 } catch (error) {
 	console.error('⚠️ Admin user initialization error:', error);

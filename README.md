@@ -53,9 +53,18 @@ npm run preview
 
 ## Admin Access
 
-Default admin credentials:
-- Email: `system@example.com`
-- Password: `Admin123!`
+Admin user is created automatically on first run. Set the `ADMIN_PASSWORD` environment variable:
+
+```sh
+# Local development
+export ADMIN_PASSWORD="your_secure_password"
+npm run dev
+
+# Or create .env file
+echo "ADMIN_PASSWORD=your_secure_password" > .env
+```
+
+Admin email: `system@example.com`
 
 ## License
 
