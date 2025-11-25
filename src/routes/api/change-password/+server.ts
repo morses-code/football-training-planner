@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { usersCollection } from '$lib/server/db';
 import { verifyPassword, hashPassword } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -20,25 +20,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Get current user
-		const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(locals.user.id) as 
-			{ password_hash: string } | undefined;
+		const userDoc = await usersCollection.doc(locals.user.id).get();
 
-		if (!user) {
+		if (!userDoc.exists) {
 			return json({ error: 'User not found' }, { status: 404 });
 		}
 
+		const userData = userDoc.data()!;
+
 		// Verify current password
-		if (!verifyPassword(currentPassword, user.password_hash)) {
+		if (!verifyPassword(currentPassword, userData.password_hash)) {
 			return json({ error: 'Current password is incorrect' }, { status: 400 });
 		}
 
 		// Update password and clear must_change_password flag
 		const newPasswordHash = hashPassword(newPassword);
-		db.prepare(`
-			UPDATE users 
-			SET password_hash = ?, must_change_password = 0 
-			WHERE id = ?
-		`).run(newPasswordHash, locals.user.id);
+		await usersCollection.doc(locals.user.id).update({
+			password_hash: newPasswordHash,
+			must_change_password: 0
+		});
 
 		return json({ success: true });
 	} catch (error) {

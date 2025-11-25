@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { usersCollection } from '$lib/server/db';
 import { hashPassword, generateSessionToken, createSession } from '$lib/server/auth';
 import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
 
@@ -17,8 +17,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	// Check if user already exists
-	const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-	if (existingUser) {
+	const existingUserSnapshot = await usersCollection.where('email', '==', email).limit(1).get();
+	if (!existingUserSnapshot.empty) {
 		return json({ error: 'Email already registered' }, { status: 400 });
 	}
 
@@ -29,16 +29,18 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const passwordHash = hashPassword(password);
 
 	try {
-		db.prepare(
-			`
-			INSERT INTO users (id, email, name, password_hash, avatar)
-			VALUES (?, ?, ?, ?, ?)
-		`
-		).run(userId, email, name, passwordHash, avatar || 'user-circle');
+		await usersCollection.doc(userId).set({
+			email,
+			name,
+			password_hash: passwordHash,
+			avatar: avatar || 'user-circle',
+			created_at: Math.floor(Date.now() / 1000),
+			must_change_password: 0
+		});
 
 		// Create session
 		const token = generateSessionToken();
-		const session = createSession(token, userId);
+		const session = await createSession(token, userId);
 
 		// Set cookie
 		cookies.set('session', token, {

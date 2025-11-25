@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { drillsCollection } from '$lib/server/db';
 
 // Update drill
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
@@ -22,24 +22,17 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	} = body;
 
 	try {
-		db.prepare(
-			`UPDATE drills 
-			 SET name = ?, description = ?, category = ?, duration = ?, 
-			     min_players = ?, max_players = ?, equipment = ?, 
-			     skill_focus = ?, coaching_points = ?
-			 WHERE id = ?`
-		).run(
+		await drillsCollection.doc(params.id).update({
 			name,
 			description,
 			category,
 			duration,
-			minPlayers,
-			maxPlayers,
+			min_players: minPlayers,
+			max_players: maxPlayers,
 			equipment,
-			skillFocus,
-			coachingPoints,
-			params.id
-		);
+			skill_focus: skillFocus,
+			coaching_points: coachingPoints
+		});
 
 		return json({ success: true });
 	} catch (e) {
@@ -56,14 +49,14 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	try {
 		// Check if drill exists
-		const drill = db.prepare('SELECT id FROM drills WHERE id = ?').get(params.id);
+		const drillDoc = await drillsCollection.doc(params.id).get();
 
-		if (!drill) {
+		if (!drillDoc.exists) {
 			return json({ error: 'Drill not found' }, { status: 404 });
 		}
 
-		// Delete the drill (CASCADE will handle session_slots references)
-		db.prepare('DELETE FROM drills WHERE id = ?').run(params.id);
+		// Delete the drill
+		await drillsCollection.doc(params.id).delete();
 
 		return json({ success: true });
 	} catch (e) {

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { trainingSessions, sessionSlotsCollection, coachAssignmentsCollection } from '$lib/server/db';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -18,100 +18,71 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Check if a session already exists on this date
-		const existingSession = db.prepare(`
-			SELECT id FROM training_sessions WHERE session_date = ?
-		`).get(sessionDate);
+		const existingSessionSnapshot = await trainingSessions.where('session_date', '==', sessionDate).limit(1).get();
 
-		if (existingSession) {
+		if (!existingSessionSnapshot.empty) {
 			return json({ error: 'A session already exists on this date. Only one session per day is allowed.' }, { status: 400 });
 		}
 
-		// Start transaction
-		db.prepare('BEGIN TRANSACTION').run();
+		// Generate session ID
+		const sessionId = crypto.randomUUID();
+		
+		// Insert training session
+		const sessionNotes = [notes, setupNotes ? `Setup: ${setupNotes}` : null]
+			.filter(Boolean)
+			.join('\n\n');
 
-		try {
-			// Generate session ID
-			const sessionId = crypto.randomUUID();
-			
-			// Insert training session
-			const sessionStmt = db.prepare(`
-				INSERT INTO training_sessions (id, session_date, start_time, duration, notes, created_by)
-				VALUES (?, ?, ?, ?, ?, ?)
-			`);
+		await trainingSessions.doc(sessionId).set({
+			session_date: sessionDate,
+			start_time: startTime,
+			duration: duration || 60,
+			notes: sessionNotes || null,
+			created_by: locals.user.id,
+			created_at: Math.floor(Date.now() / 1000)
+		});
 
-			const sessionNotes = [notes, setupNotes ? `Setup: ${setupNotes}` : null]
-				.filter(Boolean)
-				.join('\n\n');
-
-			sessionStmt.run(
-				sessionId,
-				sessionDate,
-				startTime,
-				duration || 60,
-				sessionNotes || null,
-				locals.user.id
-			);
-
-			// Insert session slots if provided and collect slot IDs
-			const slotIds: string[] = [];
-			if (slots && Array.isArray(slots)) {
-				const slotStmt = db.prepare(`
-					INSERT INTO session_slots (id, session_id, slot_type, slot_order, drill_id, duration, notes)
-					VALUES (?, ?, ?, ?, ?, ?, ?)
-				`);
-
-				slots.forEach((slot: any, index: number) => {
-					const slotId = crypto.randomUUID();
-					slotIds.push(slotId);
-					slotStmt.run(
-						slotId,
-						sessionId,
-						slot.type,
-						index + 1,
-						slot.drillId || null,
-						slot.duration,
-						slot.notes || null
-					);
+		// Insert session slots if provided and collect slot IDs
+		const slotIds: string[] = [];
+		if (slots && Array.isArray(slots)) {
+			const slotPromises = slots.map(async (slot: any, index: number) => {
+				const slotId = crypto.randomUUID();
+				slotIds.push(slotId);
+				return sessionSlotsCollection.doc(slotId).set({
+					session_id: sessionId,
+					slot_type: slot.type,
+					slot_order: index + 1,
+					drill_id: slot.drillId || null,
+					duration: slot.duration,
+					notes: slot.notes || null
 				});
-			}
-
-			// Insert coach assignments if provided
-			if (coaches && Array.isArray(coaches)) {
-				const coachStmt = db.prepare(`
-					INSERT INTO coach_assignments (id, session_id, slot_id, coach_id, role, task_type)
-					VALUES (?, ?, ?, ?, ?, ?)
-				`);
-
-				coaches.forEach((assignment: any) => {
-					// Map slotIndex to actual slot ID
-					// -1 indicates setup task (no slot)
-					const slotId = assignment.slotIndex === -1 
-						? null 
-						: (assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null);
-					
-					coachStmt.run(
-						crypto.randomUUID(),
-						sessionId,
-						slotId,
-						assignment.coachId,
-						assignment.role || 'assistant',
-						assignment.taskType || null
-					);
-				});
-			}
-
-			// Commit transaction
-			db.prepare('COMMIT').run();
-
-			return json({
-				success: true,
-				sessionId: sessionId
 			});
-		} catch (error) {
-			// Rollback on error
-			db.prepare('ROLLBACK').run();
-			throw error;
+			await Promise.all(slotPromises);
 		}
+
+		// Insert coach assignments if provided
+		if (coaches && Array.isArray(coaches)) {
+			const coachPromises = coaches.map((assignment: any) => {
+				// Map slotIndex to actual slot ID
+				// -1 indicates setup task (no slot)
+				const slotId = assignment.slotIndex === -1 
+					? null 
+					: (assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null);
+				
+				return coachAssignmentsCollection.doc(crypto.randomUUID()).set({
+					session_id: sessionId,
+					slot_id: slotId,
+					coach_id: assignment.coachId,
+					role: assignment.role || 'assistant',
+					task_type: assignment.taskType || null
+				});
+			});
+			await Promise.all(coachPromises);
+		}
+
+		return json({
+			success: true,
+			sessionId: sessionId
+		});
 	} catch (error) {
 		console.error('Error creating session:', error);
 		return json({ error: 'Failed to create session' }, { status: 500 });
@@ -120,18 +91,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 export const GET: RequestHandler = async () => {
 	try {
-		const sessions = db.prepare(`
-			SELECT 
-				ts.*,
-				COUNT(DISTINCT ss.id) as slot_count,
-				GROUP_CONCAT(DISTINCT ss.slot_type) as slot_types
-			FROM training_sessions ts
-			LEFT JOIN session_slots ss ON ts.id = ss.session_id
-			GROUP BY ts.id
-			ORDER BY ts.session_date DESC, ts.start_time DESC
-		`).all();
+		const sessionsSnapshot = await trainingSessions.orderBy('session_date', 'desc').get();
+		
+		// For each session, get slot count and types
+		const sessionsWithDetails = await Promise.all(
+			sessionsSnapshot.docs.map(async (doc) => {
+				const sessionData = doc.data();
+				const slotsSnapshot = await sessionSlotsCollection.where('session_id', '==', doc.id).get();
+				
+				const slotTypes = [...new Set(slotsSnapshot.docs.map(slotDoc => slotDoc.data().slot_type))];
+				
+				return {
+					id: doc.id,
+					...sessionData,
+					slot_count: slotsSnapshot.size,
+					slot_types: slotTypes.join(',')
+				};
+			})
+		);
 
-		return json({ sessions });
+		return json({ sessions: sessionsWithDetails });
 	} catch (error) {
 		console.error('Error fetching sessions:', error);
 		return json({ error: 'Failed to fetch sessions' }, { status: 500 });

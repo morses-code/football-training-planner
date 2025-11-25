@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import db from '$lib/server/db';
+import { drillsCollection, usersCollection } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -8,15 +8,23 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 	
 	// Load all drills for selection
-	const drills = db.prepare('SELECT * FROM drills ORDER BY category, name').all();
+	const drillsSnapshot = await drillsCollection.orderBy('category').orderBy('name').get();
+	const drills = drillsSnapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}));
 	
 	// Load all users (potential coaches), excluding system user
-	const coaches = db.prepare(`
-		SELECT id, name, email, avatar 
-		FROM users 
-		WHERE email != 'system@example.com'
-		ORDER BY name
-	`).all();
+	const coachesSnapshot = await usersCollection
+		.where('email', '!=', 'system@example.com')
+		.orderBy('email')
+		.orderBy('name')
+		.get();
+
+	const coaches = coachesSnapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}));
 	
 	return { drills, coaches };
 };

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { usersCollection } from '$lib/server/db';
 import { hashPassword } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -22,8 +22,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Check if user already exists
-		const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-		if (existingUser) {
+		const existingUserSnapshot = await usersCollection.where('email', '==', email).limit(1).get();
+		if (!existingUserSnapshot.empty) {
 			return json({ error: 'User with this email already exists' }, { status: 400 });
 		}
 
@@ -31,10 +31,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const passwordHash = hashPassword(password);
 		const userId = crypto.randomUUID();
 		
-		db.prepare(`
-			INSERT INTO users (id, email, password_hash, name, avatar, must_change_password, created_at)
-			VALUES (?, ?, ?, ?, ?, ?, ?)
-		`).run(userId, email, passwordHash, name, avatar || 'user', mustChangePassword ? 1 : 0, Math.floor(Date.now() / 1000));
+		await usersCollection.doc(userId).set({
+			email,
+			password_hash: passwordHash,
+			name,
+			avatar: avatar || 'user',
+			must_change_password: mustChangePassword ? 1 : 0,
+			created_at: Math.floor(Date.now() / 1000)
+		});
 
 		return json({ 
 			success: true, 

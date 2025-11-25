@@ -4,7 +4,7 @@ import { invalidateSession } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ locals, cookies }) => {
 	if (locals.session) {
-		invalidateSession(locals.session.id);
+		await invalidateSession(locals.session.id);
 	}
 
 	cookies.delete('session', { path: '/' });

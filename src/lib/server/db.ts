@@ -1,166 +1,131 @@
 /**
- * @fileoverview SQLite database initialization and schema setup.
+ * @fileoverview Firestore database initialization and configuration.
  * 
- * This module creates and configures a SQLite database for user authentication.
- * Uses better-sqlite3 for synchronous database operations.
+ * This module creates and configures a Firestore client for persistent data storage.
+ * Uses @google-cloud/firestore for document-based operations.
  * 
  * @module lib/server/db
  * 
- * ## Database Schema
+ * ## Collections
  * 
- * ### users table
- * - id: TEXT PRIMARY KEY - Unique user identifier
- * - email: TEXT UNIQUE NOT NULL - User's email address
- * - name: TEXT NOT NULL - User's display name
- * - password_hash: TEXT NOT NULL - SHA-256 hashed password
- * - avatar: TEXT NOT NULL - Avatar icon identifier (default: 'user-circle')
- * - created_at: INTEGER NOT NULL - Unix timestamp of account creation
+ * ### users
+ * - id: string - Unique user identifier (document ID)
+ * - email: string - User's email address (unique)
+ * - name: string - User's display name
+ * - password_hash: string - SHA-256 hashed password
+ * - avatar: string - Avatar icon identifier (default: 'user-circle')
+ * - created_at: number - Unix timestamp of account creation
+ * - must_change_password: number - 0 or 1 flag
  * 
- * ### sessions table
- * - id: TEXT PRIMARY KEY - Session token hash (SHA-256)
- * - user_id: TEXT NOT NULL - Foreign key to users.id
- * - expires_at: INTEGER NOT NULL - Unix timestamp of session expiration
+ * ### sessions
+ * - id: string - Session token hash (document ID)
+ * - user_id: string - Reference to users document
+ * - expires_at: number - Unix timestamp of session expiration
  * 
- * ## Configuration
- * - WAL mode enabled for better concurrency
- * - Foreign keys enforced (CASCADE on user deletion)
- * - Indexes on user_id and expires_at for session queries
+ * ### drills
+ * - id: string - Unique drill identifier (document ID)
+ * - name: string - Drill name
+ * - description: string - Drill description
+ * - duration: number - Duration in minutes
+ * - category: string - Drill category
+ * - skill_focus: string - Primary skill focus
+ * - equipment: string - Required equipment
+ * - instructions: string - Detailed instructions
+ * - min_players: number - Minimum players
+ * - max_players: number - Maximum players
+ * - created_by: string - User ID who created drill
+ * - created_at: number - Unix timestamp
  * 
- * ## Database Location
- * Database file is stored at project root: `app.db`
+ * ### training_sessions
+ * - id: string - Unique session identifier (document ID)
+ * - session_date: number - Unix timestamp of session date
+ * - start_time: string - Session start time
+ * - duration: number - Duration in minutes
+ * - notes: string - Session notes
+ * - created_by: string - User ID who created session
+ * - created_at: number - Unix timestamp
+ * 
+ * ### session_slots
+ * - id: string - Unique slot identifier (document ID)
+ * - session_id: string - Reference to training_sessions
+ * - slot_type: string - Type of slot (warmup, drill, game)
+ * - slot_order: number - Order in session
+ * - drill_id: string - Reference to drills (optional)
+ * - duration: number - Slot duration in minutes
+ * - notes: string - Slot notes
+ * 
+ * ### coach_assignments
+ * - id: string - Unique assignment identifier (document ID)
+ * - session_id: string - Reference to training_sessions
+ * - slot_id: string - Reference to session_slots (optional)
+ * - coach_id: string - Reference to users
+ * - role: string - Coach role
+ * - task_type: string - Task type
  * 
  * @example
- * import db from '$lib/server/db';
+ * import { db, usersCollection } from '$lib/server/db';
  * 
  * // Query users
- * const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+ * const snapshot = await usersCollection.where('email', '==', email).limit(1).get();
  */
-import Database from 'better-sqlite3';
-import { join } from 'path';
+import { Firestore } from '@google-cloud/firestore';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeHexLowerCase } from '@oslojs/encoding';
 
-// Use environment variable for database path, fallback to local path
-const dbPath = process.env.DATABASE_PATH || join(process.cwd(), 'app.db');
-const db = new Database(dbPath);
+// Initialize Firestore
+const db = new Firestore({
+	projectId: process.env.GCP_PROJECT || 'football-training-planner',
+	// In Cloud Run, credentials are automatically provided
+	// For local development, use GOOGLE_APPLICATION_CREDENTIALS env var
+});
 
-// Enable WAL mode for better concurrency
-db.pragma('journal_mode = WAL');
-
-// Create tables
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL,
-    name TEXT NOT NULL,
-    password_hash TEXT NOT NULL,
-    avatar TEXT NOT NULL DEFAULT 'user-circle',
-    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-    must_change_password INTEGER DEFAULT 0
-  );
-
-  CREATE TABLE IF NOT EXISTS sessions (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    expires_at INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-  CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
-
-  -- Drills table
-  CREATE TABLE IF NOT EXISTS drills (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    duration INTEGER NOT NULL,
-    category TEXT NOT NULL,
-    skill_focus TEXT NOT NULL,
-    equipment TEXT,
-    instructions TEXT,
-    min_players INTEGER,
-    max_players INTEGER,
-    created_by TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
-  );
-
-  -- Training sessions table
-  CREATE TABLE IF NOT EXISTS training_sessions (
-    id TEXT PRIMARY KEY,
-    session_date INTEGER NOT NULL,
-    start_time TEXT NOT NULL,
-    duration INTEGER NOT NULL DEFAULT 60,
-    notes TEXT,
-    created_by TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-    FOREIGN KEY (created_by) REFERENCES users(id)
-  );
-
-  -- Session slots table (warmup, drills, small sided games)
-  CREATE TABLE IF NOT EXISTS session_slots (
-    id TEXT PRIMARY KEY,
-    session_id TEXT NOT NULL,
-    slot_type TEXT NOT NULL,
-    slot_order INTEGER NOT NULL,
-    drill_id TEXT,
-    duration INTEGER NOT NULL,
-    notes TEXT,
-    FOREIGN KEY (session_id) REFERENCES training_sessions(id) ON DELETE CASCADE,
-    FOREIGN KEY (drill_id) REFERENCES drills(id) ON DELETE SET NULL
-  );
-
-  -- Coach assignments table
-  CREATE TABLE IF NOT EXISTS coach_assignments (
-    id TEXT PRIMARY KEY,
-    session_id TEXT NOT NULL,
-    slot_id TEXT,
-    coach_id TEXT NOT NULL,
-    role TEXT NOT NULL,
-    task_type TEXT,
-    FOREIGN KEY (session_id) REFERENCES training_sessions(id) ON DELETE CASCADE,
-    FOREIGN KEY (slot_id) REFERENCES session_slots(id) ON DELETE CASCADE,
-    FOREIGN KEY (coach_id) REFERENCES users(id) ON DELETE CASCADE
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_drills_category ON drills(category);
-  CREATE INDEX IF NOT EXISTS idx_training_sessions_date ON training_sessions(session_date);
-  CREATE INDEX IF NOT EXISTS idx_session_slots_session ON session_slots(session_id);
-  CREATE INDEX IF NOT EXISTS idx_coach_assignments_session ON coach_assignments(session_id);
-  CREATE INDEX IF NOT EXISTS idx_coach_assignments_coach ON coach_assignments(coach_id);
-`);
+// Collection references
+export const usersCollection = db.collection('users');
+export const sessionsCollection = db.collection('sessions');
+export const drillsCollection = db.collection('drills');
+export const trainingSessions = db.collection('training_sessions');
+export const sessionSlotsCollection = db.collection('session_slots');
+export const coachAssignmentsCollection = db.collection('coach_assignments');
 
 // Initialize admin user if it doesn't exist (for production deployments)
-try {
-	const adminExists = db.prepare('SELECT id FROM users WHERE email = ?').get('system@example.com');
-	if (!adminExists) {
-		// Get admin password from environment variable
-		const adminPassword = process.env.ADMIN_PASSWORD;
-		if (!adminPassword) {
-			console.error('⚠️ ADMIN_PASSWORD environment variable not set - skipping admin user creation');
-		} else {
-			// Hash password inline
-			const hashPassword = (password: string) => {
-				const encoder = new TextEncoder();
-				const data = encoder.encode(password);
-				const hashBuffer = sha256(data);
-				return encodeHexLowerCase(hashBuffer);
-			};
-			
-			const adminId = crypto.randomUUID();
-			const passwordHash = hashPassword(adminPassword);
-			
-			db.prepare(`
-				INSERT INTO users (id, email, name, password_hash, avatar, created_at, must_change_password)
-				VALUES (?, ?, ?, ?, ?, ?, ?)
-			`).run(adminId, 'system@example.com', 'System Admin', passwordHash, 'user-circle', Math.floor(Date.now() / 1000), 0);
-			
-			console.log('✅ Created admin user: system@example.com');
+async function initializeAdminUser() {
+	try {
+		const adminSnapshot = await usersCollection.where('email', '==', 'system@example.com').limit(1).get();
+		
+		if (adminSnapshot.empty) {
+			const adminPassword = process.env.ADMIN_PASSWORD;
+			if (!adminPassword) {
+				console.error('⚠️ ADMIN_PASSWORD environment variable not set - skipping admin user creation');
+			} else {
+				// Hash password
+				const hashPassword = (password: string) => {
+					const encoder = new TextEncoder();
+					const data = encoder.encode(password);
+					const hashBuffer = sha256(data);
+					return encodeHexLowerCase(hashBuffer);
+				};
+				
+				const adminId = crypto.randomUUID();
+				const passwordHash = hashPassword(adminPassword);
+				
+				await usersCollection.doc(adminId).set({
+					email: 'system@example.com',
+					name: 'System Admin',
+					password_hash: passwordHash,
+					avatar: 'user-circle',
+					created_at: Math.floor(Date.now() / 1000),
+					must_change_password: 0
+				});
+				
+				console.log('✅ Created admin user: system@example.com');
+			}
 		}
+	} catch (error) {
+		console.error('⚠️ Admin user initialization error:', error);
 	}
-} catch (error) {
-	console.error('⚠️ Admin user initialization error:', error);
 }
 
-export default db;
+// Initialize admin user (non-blocking)
+initializeAdminUser();
+
+export { db };

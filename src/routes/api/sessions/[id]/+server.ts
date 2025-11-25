@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import type { RequestHandler} from './$types';
+import { trainingSessions, sessionSlotsCollection, coachAssignmentsCollection } from '$lib/server/db';
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (!locals.user) {
@@ -10,15 +10,23 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const sessionId = params.id;
 
 	try {
-		// Check if session exists and user owns it
-		const session = db.prepare('SELECT created_by FROM training_sessions WHERE id = ?').get(sessionId) as { created_by: string } | undefined;
+		// Check if session exists
+		const sessionDoc = await trainingSessions.doc(sessionId).get();
 		
-		if (!session) {
+		if (!sessionDoc.exists) {
 			return json({ error: 'Session not found' }, { status: 404 });
 		}
 
-		// Delete session (CASCADE will delete slots and coach assignments)
-		db.prepare('DELETE FROM training_sessions WHERE id = ?').run(sessionId);
+		// Delete session slots
+		const slotsSnapshot = await sessionSlotsCollection.where('session_id', '==', sessionId).get();
+		await Promise.all(slotsSnapshot.docs.map(doc => doc.ref.delete()));
+
+		// Delete coach assignments
+		const assignmentsSnapshot = await coachAssignmentsCollection.where('session_id', '==', sessionId).get();
+		await Promise.all(assignmentsSnapshot.docs.map(doc => doc.ref.delete()));
+
+		// Delete session
+		await trainingSessions.doc(sessionId).delete();
 
 		return json({ success: true });
 	} catch (error) {
@@ -39,89 +47,72 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const { sessionDate, startTime, duration, notes, slots, coaches } = data;
 
 		// Check if session exists
-		const session = db.prepare('SELECT id FROM training_sessions WHERE id = ?').get(sessionId);
+		const sessionDoc = await trainingSessions.doc(sessionId).get();
 		
-		if (!session) {
+		if (!sessionDoc.exists) {
 			return json({ error: 'Session not found' }, { status: 404 });
 		}
 
 		// Check if another session already exists on this date (excluding current session)
-		const existingSession = db.prepare(`
-			SELECT id FROM training_sessions 
-			WHERE session_date = ? AND id != ?
-		`).get(sessionDate, sessionId);
+		const existingSessionSnapshot = await trainingSessions
+			.where('session_date', '==', sessionDate)
+			.get();
 
-		if (existingSession) {
+		const otherSession = existingSessionSnapshot.docs.find(doc => doc.id !== sessionId);
+		if (otherSession) {
 			return json({ error: 'A session already exists on this date. Only one session per day is allowed.' }, { status: 400 });
 		}
 
-		// Start transaction
-		db.prepare('BEGIN TRANSACTION').run();
+		// Update training session
+		await trainingSessions.doc(sessionId).update({
+			session_date: sessionDate,
+			start_time: startTime,
+			duration: duration || 60,
+			notes: notes || null
+		});
 
-		try {
-			// Update training session
-			db.prepare(`
-				UPDATE training_sessions 
-				SET session_date = ?, start_time = ?, duration = ?, notes = ?
-				WHERE id = ?
-			`).run(sessionDate, startTime, duration || 60, notes || null, sessionId);
+		// Delete existing slots and coach assignments
+		const existingSlotsSnapshot = await sessionSlotsCollection.where('session_id', '==', sessionId).get();
+		await Promise.all(existingSlotsSnapshot.docs.map(doc => doc.ref.delete()));
 
-			// Delete existing slots and coach assignments (CASCADE)
-			db.prepare('DELETE FROM session_slots WHERE session_id = ?').run(sessionId);
-			db.prepare('DELETE FROM coach_assignments WHERE session_id = ?').run(sessionId);
+		const existingAssignmentsSnapshot = await coachAssignmentsCollection.where('session_id', '==', sessionId).get();
+		await Promise.all(existingAssignmentsSnapshot.docs.map(doc => doc.ref.delete()));
 
-			// Insert new session slots
-			const slotIds: string[] = [];
-			if (slots && Array.isArray(slots)) {
-				const slotStmt = db.prepare(`
-					INSERT INTO session_slots (id, session_id, slot_type, slot_order, drill_id, duration, notes)
-					VALUES (?, ?, ?, ?, ?, ?, ?)
-				`);
-
-				slots.forEach((slot: any, index: number) => {
-					const slotId = crypto.randomUUID();
-					slotIds.push(slotId);
-					slotStmt.run(
-						slotId,
-						sessionId,
-						slot.type,
-						index + 1,
-						slot.drillId || null,
-						slot.duration,
-						slot.notes || null
-					);
+		// Insert new session slots
+		const slotIds: string[] = [];
+		if (slots && Array.isArray(slots)) {
+			const slotPromises = slots.map(async (slot: any, index: number) => {
+				const slotId = crypto.randomUUID();
+				slotIds.push(slotId);
+				return sessionSlotsCollection.doc(slotId).set({
+					session_id: sessionId,
+					slot_type: slot.type,
+					slot_order: index + 1,
+					drill_id: slot.drillId || null,
+					duration: slot.duration,
+					notes: slot.notes || null
 				});
-			}
-
-			// Insert new coach assignments
-			if (coaches && Array.isArray(coaches)) {
-				const coachStmt = db.prepare(`
-					INSERT INTO coach_assignments (id, session_id, slot_id, coach_id, role, task_type)
-					VALUES (?, ?, ?, ?, ?, ?)
-				`);
-
-				coaches.forEach((assignment: any) => {
-					const slotId = assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null;
-					
-					coachStmt.run(
-						crypto.randomUUID(),
-						sessionId,
-						slotId,
-						assignment.coachId,
-						assignment.role || 'assistant',
-						assignment.taskType || null
-					);
-				});
-			}
-
-			// Commit transaction
-			db.prepare('COMMIT').run();
-
-			return json({ success: true, sessionId });
-		} catch (error) {
-			db.prepare('ROLLBACK').run();
-			throw error;
+			});
+			await Promise.all(slotPromises);
 		}
+
+		// Insert new coach assignments
+		if (coaches && Array.isArray(coaches)) {
+			const coachPromises = coaches.map((assignment: any) => {
+				const slotId = assignment.slotIndex !== undefined ? slotIds[assignment.slotIndex] : null;
+				
+				return coachAssignmentsCollection.doc(crypto.randomUUID()).set({
+					session_id: sessionId,
+					slot_id: slotId,
+					coach_id: assignment.coachId,
+					role: assignment.role || 'assistant',
+					task_type: assignment.taskType || null
+				});
+			});
+			await Promise.all(coachPromises);
+		}
+
+		return json({ success: true, sessionId });
 	} catch (error) {
 		console.error('Error updating session:', error);
 		return json({ error: 'Failed to update session' }, { status: 500 });

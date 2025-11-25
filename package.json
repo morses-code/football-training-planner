@@ -15,7 +15,6 @@
 		"docs": "typedoc",
 		"docs:serve": "typedoc && npx http-server docs -o",
 		"seed": "tsx scripts/seed.ts",
-		"init-db": "node build/server/chunks/init-db.js",
 		"start": "node scripts/start.js"
 	},
 	"devDependencies": {
@@ -28,7 +27,6 @@
 		"@tailwindcss/forms": "^0.5.10",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.14",
-		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^24",
 		"eslint": "^9.38.0",
 		"eslint-config-prettier": "^10.1.8",
@@ -47,9 +45,8 @@
 		"vite": "^7.1.10"
 	},
 	"dependencies": {
+		"@google-cloud/firestore": "^8.0.0",
 		"@oslojs/crypto": "^1.0.1",
-		"@oslojs/encoding": "^1.1.0",
-		"better-sqlite3": "^11.10.0",
-		"pg": "^8.16.3"
+		"@oslojs/encoding": "^1.1.0"
 	}
 }

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { drillsCollection } from '$lib/server/db';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -17,30 +17,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Missing required fields' }, { status: 400 });
 		}
 
-		// Insert drill into database
-		const stmt = db.prepare(`
-			INSERT INTO drills (
-				name, description, duration, category, skill_focus, 
-				equipment, instructions, min_players, max_players, created_by
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-		`);
+		const drillId = crypto.randomUUID();
 
-		const result = stmt.run(
+		await drillsCollection.doc(drillId).set({
 			name,
 			description,
 			duration,
 			category,
-			skillFocus || null,
-			equipment || null,
-			instructions || null,
-			minPlayers || 4,
-			maxPlayers || 12,
-			locals.user.id
-		);
+			skill_focus: skillFocus || null,
+			equipment: equipment || null,
+			instructions: instructions || null,
+			min_players: minPlayers || 4,
+			max_players: maxPlayers || 12,
+			created_by: locals.user.id,
+			created_at: Math.floor(Date.now() / 1000)
+		});
 
 		return json({
 			success: true,
-			drillId: result.lastInsertRowid
+			drillId
 		});
 	} catch (error) {
 		console.error('Error creating drill:', error);
@@ -50,7 +45,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 export const GET: RequestHandler = async () => {
 	try {
-		const drills = db.prepare('SELECT * FROM drills ORDER BY created_at DESC').all();
+		const snapshot = await drillsCollection.orderBy('created_at', 'desc').get();
+		const drills = snapshot.docs.map(doc => ({
+			id: doc.id,
+			...doc.data()
+		}));
 		return json({ drills });
 	} catch (error) {
 		console.error('Error fetching drills:', error);

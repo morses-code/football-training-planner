@@ -1,20 +1,22 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import db from '$lib/server/db';
+import { usersCollection } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
 
-	const coaches = db
-		.prepare(
-			`SELECT id, name, email, avatar, created_at 
-			 FROM users 
-			 WHERE email != 'system@example.com'
-			 ORDER BY name ASC`
-		)
-		.all() as any[];
+	const snapshot = await usersCollection
+		.where('email', '!=', 'system@example.com')
+		.orderBy('email')
+		.orderBy('name', 'asc')
+		.get();
+
+	const coaches = snapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}));
 
 	return {
 		coaches

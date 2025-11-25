@@ -1,14 +1,18 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import db from '$lib/server/db';
+import { drillsCollection } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
 
-	// Fetch all drills from database
-	const drills = db.prepare('SELECT * FROM drills ORDER BY created_at DESC').all();
+	// Fetch all drills from Firestore
+	const snapshot = await drillsCollection.orderBy('created_at', 'desc').get();
+	const drills = snapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}));
 	
 	return {
 		user: locals.user,

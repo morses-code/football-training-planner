@@ -33,7 +33,7 @@
  */
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
 import { sha256 } from '@oslojs/crypto/sha2';
-import db from './db';
+import { usersCollection, sessionsCollection } from './db';
 
 /** Session duration in milliseconds (30 days) */
 /** Session duration in milliseconds (30 days) */
@@ -92,28 +92,26 @@ export function generateSessionToken(): string {
 /**
  * Creates a new session for a user.
  * 
- * Stores the SHA-256 hash of the token in the database along with
+ * Stores the SHA-256 hash of the token in Firestore along with
  * the user ID and expiration timestamp.
  * 
  * @param {string} token - The session token (from generateSessionToken)
  * @param {string} userId - The user's unique identifier
- * @returns {Session} The created session object
+ * @returns {Promise<Session>} The created session object
  * 
  * @example
  * const token = generateSessionToken();
- * const session = createSession(token, user.id);
+ * const session = await createSession(token, user.id);
  * // Set cookie with the plain token (not the hash)
  */
-export function createSession(token: string, userId: string): Session {
+export async function createSession(token: string, userId: string): Promise<Session> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const expiresAt = new Date(Date.now() + SESSION_DURATION);
 
-	const stmt = db.prepare(`
-		INSERT INTO sessions (id, user_id, expires_at)
-		VALUES (?, ?, ?)
-	`);
-
-	stmt.run(sessionId, userId, Math.floor(expiresAt.getTime() / 1000));
+	await sessionsCollection.doc(sessionId).set({
+		user_id: userId,
+		expires_at: Math.floor(expiresAt.getTime() / 1000)
+	});
 
 	return {
 		id: sessionId,
@@ -126,84 +124,77 @@ export function createSession(token: string, userId: string): Session {
  * Validates a session token and returns the associated session and user.
  * 
  * This function:
- * 1. Hashes the token and looks up the session in the database
+ * 1. Hashes the token and looks up the session in Firestore
  * 2. Checks if the session has expired
  * 3. Auto-refreshes sessions with less than 15 days remaining
  * 4. Returns session and user data if valid, or null values if invalid
  * 
  * @param {string} token - The plain session token from the cookie
- * @returns {SessionValidationResult} Object containing session and user, or nulls
+ * @returns {Promise<SessionValidationResult>} Object containing session and user, or nulls
  * 
  * @example
- * const { session, user } = validateSessionToken(cookieToken);
+ * const { session, user } = await validateSessionToken(cookieToken);
  * if (user) {
  *   // User is authenticated
  *   console.log('Logged in as:', user.email);
  * }
  */
-export function validateSessionToken(token: string): SessionValidationResult {
+export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
-	const row = db
-		.prepare(
-			`
-		SELECT sessions.id, sessions.user_id, sessions.expires_at,
-		       users.id as user_id, users.email, users.name, users.avatar, users.created_at
-		FROM sessions
-		INNER JOIN users ON sessions.user_id = users.id
-		WHERE sessions.id = ?
-	`
-		)
-		.get(sessionId) as
-		| {
-				id: string;
-				user_id: string;
-				expires_at: number;
-				email: string;
-				name: string;
-				avatar: string;
-				created_at: number;
-		  }
-		| undefined;
-
-	if (!row) {
+	const sessionDoc = await sessionsCollection.doc(sessionId).get();
+	
+	if (!sessionDoc.exists) {
 		return { session: null, user: null };
 	}
 
+	const sessionData = sessionDoc.data()!;
+	const expiresAt = new Date(sessionData.expires_at * 1000);
+
+	// Check if session is expired
+	if (Date.now() >= expiresAt.getTime()) {
+		await sessionsCollection.doc(sessionId).delete();
+		return { session: null, user: null };
+	}
+
+	// Get user data
+	const userDoc = await usersCollection.doc(sessionData.user_id).get();
+	
+	if (!userDoc.exists) {
+		await sessionsCollection.doc(sessionId).delete();
+		return { session: null, user: null };
+	}
+
+	const userData = userDoc.data()!;
+
 	const session: Session = {
-		id: row.id,
-		userId: row.user_id,
-		expiresAt: new Date(row.expires_at * 1000)
+		id: sessionId,
+		userId: sessionData.user_id,
+		expiresAt
 	};
 
 	const user: User = {
-		id: row.user_id,
-		email: row.email,
-		name: row.name,
-		avatar: row.avatar,
-		created_at: row.created_at
+		id: userDoc.id,
+		email: userData.email,
+		name: userData.name,
+		avatar: userData.avatar,
+		created_at: userData.created_at
 	};
 
-	// Check if session is expired
-	if (Date.now() >= session.expiresAt.getTime()) {
-		db.prepare('DELETE FROM sessions WHERE id = ?').run(session.id);
-		return { session: null, user: null };
-	}
-
 	// Refresh session if it's close to expiring (less than 15 days left)
-	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
-		session.expiresAt = new Date(Date.now() + SESSION_DURATION);
-		db.prepare('UPDATE sessions SET expires_at = ? WHERE id = ?').run(
-			Math.floor(session.expiresAt.getTime() / 1000),
-			session.id
-		);
+	if (Date.now() >= expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
+		const newExpiresAt = new Date(Date.now() + SESSION_DURATION);
+		await sessionsCollection.doc(sessionId).update({
+			expires_at: Math.floor(newExpiresAt.getTime() / 1000)
+		});
+		session.expiresAt = newExpiresAt;
 	}
 
 	return { session, user };
 }
 
 /**
- * Invalidates a session by deleting it from the database.
+ * Invalidates a session by deleting it from Firestore.
  * 
  * Used during logout to immediately terminate a session.
  * The session ID should be the hashed token, not the plain token.
@@ -213,11 +204,11 @@ export function validateSessionToken(token: string): SessionValidationResult {
  * @example
  * // In logout handler
  * if (locals.session) {
- *   invalidateSession(locals.session.id);
+ *   await invalidateSession(locals.session.id);
  * }
  */
-export function invalidateSession(sessionId: string): void {
-	db.prepare('DELETE FROM sessions WHERE id = ?').run(sessionId);
+export async function invalidateSession(sessionId: string): Promise<void> {
+	await sessionsCollection.doc(sessionId).delete();
 }
 
 /**

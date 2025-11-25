@@ -10,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	const { session, user } = validateSessionToken(token);
+	const { session, user } = await validateSessionToken(token);
 
 	if (session) {
 		// Refresh the cookie expiration

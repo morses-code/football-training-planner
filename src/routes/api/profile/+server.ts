@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import db from '$lib/server/db';
+import { usersCollection } from '$lib/server/db';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -14,13 +14,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		db.prepare(
-			`
-			UPDATE users
-			SET name = ?, avatar = ?
-			WHERE id = ?
-		`
-		).run(name, avatar, locals.user.id);
+		await usersCollection.doc(locals.user.id).update({
+			name,
+			avatar
+		});
 
 		return json({ success: true, user: { ...locals.user, name, avatar } });
 	} catch (error) {

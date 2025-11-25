@@ -1,40 +1,51 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import db from '$lib/server/db';
+import { trainingSessions, sessionSlotsCollection, drillsCollection } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
 
-	// Fetch sessions with drill counts
-	const sessions = db.prepare(`
-		SELECT 
-			ts.*,
-			COUNT(DISTINCT ss.id) as slot_count,
-			COUNT(DISTINCT CASE WHEN ss.drill_id IS NOT NULL THEN ss.id END) as drills_assigned
-		FROM training_sessions ts
-		LEFT JOIN session_slots ss ON ts.id = ss.session_id
-		WHERE datetime(ts.session_date || ' ' || ts.start_time) >= datetime('now', 'localtime')
-		GROUP BY ts.id
-		ORDER BY ts.session_date ASC, ts.start_time ASC
-		LIMIT 20
-	`).all();
+	// Fetch upcoming sessions
+	const now = Math.floor(Date.now() / 1000);
+	const sessionsSnapshot = await trainingSessions
+		.where('session_date', '>=', now)
+		.orderBy('session_date', 'asc')
+		.limit(20)
+		.get();
+
+	// For each session, get slot and drill counts
+	const sessions = await Promise.all(
+		sessionsSnapshot.docs.map(async (doc) => {
+			const sessionData = doc.data();
+			const slotsSnapshot = await sessionSlotsCollection.where('session_id', '==', doc.id).get();
+			
+			const drillsAssigned = slotsSnapshot.docs.filter(slotDoc => slotDoc.data().drill_id !== null).length;
+			
+			return {
+				id: doc.id,
+				...sessionData,
+				slot_count: slotsSnapshot.size,
+				drills_assigned: drillsAssigned
+			};
+		})
+	);
 
 	// Get total drills count
-	const drillCount = db.prepare('SELECT COUNT(*) as count FROM drills').get() as { count: number };
+	const drillsSnapshot = await drillsCollection.get();
+	const drillCount = drillsSnapshot.size;
 
 	// Get past sessions count
-	const pastSessionsCount = db.prepare(`
-		SELECT COUNT(*) as count 
-		FROM training_sessions 
-		WHERE datetime(session_date || ' ' || start_time) < datetime('now', 'localtime')
-	`).get() as { count: number };
+	const pastSessionsSnapshot = await trainingSessions
+		.where('session_date', '<', now)
+		.get();
+	const pastSessionsCount = pastSessionsSnapshot.size;
 
 	return {
 		user: locals.user,
 		sessions,
-		drillCount: drillCount.count,
-		pastSessionsCount: pastSessionsCount.count
+		drillCount,
+		pastSessionsCount
 	};
 };
