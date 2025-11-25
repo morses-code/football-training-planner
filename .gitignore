@@ -29,3 +29,7 @@ app.db-wal
 
 # Documentation
 /docs
+
+# Firestore seed/delete scripts
+/scripts/seed-drills.ts
+/scripts/delete-drills.ts
