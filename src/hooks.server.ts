@@ -26,5 +26,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	event.locals.user = user;
 
-	return resolve(event);
+	const response = await resolve(event);
+	
+	// Add cache-control headers to all pages to ensure fresh data on back/forward navigation
+	response.headers.set('cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+	response.headers.set('pragma', 'no-cache');
+	response.headers.set('expires', '0');
+	
+	return response;
 };

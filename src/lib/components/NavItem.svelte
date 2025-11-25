@@ -63,6 +63,7 @@
 	<a
 		{href}
 		onclick={handleClick}
+		data-sveltekit-preload-data="hover"
 		class="flex items-center rounded-lg px-3 md:px-4 py-2 md:py-3 transition-all duration-200 hover:bg-slate-700 relative overflow-hidden"
 		class:justify-start={isExpanded}
 		class:justify-center={!isExpanded}

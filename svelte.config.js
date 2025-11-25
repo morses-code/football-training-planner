@@ -8,7 +8,11 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		// Disable client-side caching for better back button behavior
+		version: {
+			pollInterval: 0
+		}
 	}
 };
 
