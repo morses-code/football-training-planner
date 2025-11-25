@@ -7,10 +7,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, '/login');
 	}
 
-	// Fetch upcoming sessions
-	const now = Math.floor(Date.now() / 1000);
+	// Get today's date at midnight (start of today)
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+	// Fetch upcoming sessions (including today)
 	const sessionsSnapshot = await trainingSessions
-		.where('session_date', '>=', now)
+		.where('session_date', '>=', todayString)
 		.orderBy('session_date', 'asc')
 		.limit(20)
 		.get();
@@ -36,9 +40,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const drillsSnapshot = await drillsCollection.get();
 	const drillCount = drillsSnapshot.size;
 
-	// Get past sessions count
+	// Get past sessions count (before today)
 	const pastSessionsSnapshot = await trainingSessions
-		.where('session_date', '<', now)
+		.where('session_date', '<', todayString)
 		.get();
 	const pastSessionsCount = pastSessionsSnapshot.size;
 

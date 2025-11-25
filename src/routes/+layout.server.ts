@@ -5,10 +5,14 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	let assignmentCount = 0;
 	
 	if (locals.user) {
-		// Get the next upcoming session
-		const now = Math.floor(Date.now() / 1000);
+		// Get today's date at midnight
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+		
+		// Get the next upcoming session (including today)
 		const upcomingSessionsSnapshot = await trainingSessions
-			.where('session_date', '>=', now)
+			.where('session_date', '>=', todayString)
 			.orderBy('session_date', 'asc')
 			.limit(1)
 			.get();
